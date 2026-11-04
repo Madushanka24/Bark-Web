@@ -109,9 +109,6 @@ function QuantityControl({
     String(item.quantity)
   );
 
-  useEffect(() => {
-    setDraft(String(item.quantity));
-  }, [item.quantity]);
 
   function applyQuantity() {
     const value = Number(draft);
@@ -125,6 +122,7 @@ function QuantityControl({
       return;
     }
 
+    setDraft(String(value));
     onChange(item.id, value);
   }
 
@@ -206,13 +204,6 @@ function BasketItemCard({
 }) {
   const notesId = useId();
 
-  const [notes, setNotes] = useState(
-    item.notes
-  );
-
-  useEffect(() => {
-    setNotes(item.notes);
-  }, [item.notes]);
 
   const options = [
     ["Material", item.options.material],
@@ -285,6 +276,7 @@ function BasketItemCard({
 
         <fieldset disabled={disabled}>
           <QuantityControl
+            key={item.quantity}
             item={item}
             onChange={onQuantityChange}
           />
@@ -301,16 +293,12 @@ function BasketItemCard({
 
         <textarea
           id={notesId}
-          value={notes}
+          value={item.notes}
           rows={3}
           maxLength={2000}
           disabled={disabled}
           placeholder="Additional product requirements..."
-          onChange={(event) => {
-            const nextNotes = event.target.value;
-            setNotes(nextNotes);
-            onNotesChange(item.id, nextNotes);
-          }}
+          onChange={(event) => onNotesChange(item.id, event.target.value)}
           className="form-textarea"
         />
 
@@ -402,8 +390,53 @@ export default function RequestQuotationPage() {
   const [customer, setCustomer] =
     useState<CustomerForm>({ ...INITIAL_CUSTOMER });
   const [composeMessage, setComposeMessage] = useState("");
+
+  const [reviewDraft, setReviewDraft] = useState<{
+    draft: QuotationEmailDraft;
+    basketSnapshot: string;
+  } | null>(null);
+
+/* FILE 134: FOCUS GENERATED PREVIEW */
+useEffect(() => {
+  if (reviewDraft) {
+    previewHeadingRef.current?.focus();
+  }
+}, [reviewDraft]);
+
+  const currentBasketSnapshot = JSON.stringify(items);
+
+  const currentReviewDraft =
+    reviewDraft && isLoaded && !isEmpty &&
+    reviewDraft.basketSnapshot === currentBasketSnapshot
+      ? reviewDraft.draft
+      : null;
   const [manualCopyText, setManualCopyText] = useState("");
+
+  /* FILE 135 - PREPARED EMAIL CONSISTENCY */
+
+  const [formRevision, setFormRevision] = useState(0);
+
+  const [preparedVersion, setPreparedVersion] = useState<{
+    formRevision: number;
+    basketSnapshot: string;
+  } | null>(null);
+
+  const copyAttemptRef = useRef(0);
+
+  const preparedStateIsCurrent =
+    preparedVersion !== null &&
+    preparedVersion.formRevision === formRevision &&
+    preparedVersion.basketSnapshot === currentBasketSnapshot;
+
+  const currentComposeMessage = preparedStateIsCurrent
+    ? composeMessage
+    : "";
+
+  const currentManualCopyText = preparedStateIsCurrent
+    ? manualCopyText
+    : "";
   const formRef = useRef<HTMLFormElement>(null);
+const previewHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const recipient = APPROVED_QUOTATION_RECIPIENT.trim();
   const hasApprovedRecipient =
@@ -413,6 +446,7 @@ export default function RequestQuotationPage() {
     field: keyof CustomerForm,
     value: string | boolean
   ) {
+    invalidatePreparedContent();
     setCustomer((previous) => ({
       ...previous,
       [field]: value,
@@ -421,12 +455,30 @@ export default function RequestQuotationPage() {
     setManualCopyText("");
   }
 
+  function handlePreviewQuotation() {
+    copyAttemptRef.current += 1;
+    setReviewDraft(null);
+
+    const draft = prepareEmailDraft();
+    if (!draft) return;
+
+    setReviewDraft({
+      draft,
+      basketSnapshot: JSON.stringify(items),
+    });
+
+    setComposeMessage(
+      "Quotation preview prepared. Review the details before copying or opening an email app."
+    );
+  }
+
   function handleClearBasket() {
     if (
       window.confirm(
         "Remove all products from your quotation basket?"
       )
     ) {
+      invalidatePreparedContent();
       clearItems();
       setComposeMessage("");
       setManualCopyText("");
@@ -434,7 +486,24 @@ export default function RequestQuotationPage() {
   }
 
   /** Read existing customer fields; never submit to a server. */
+  /* FILE 135 - INVALIDATE OLD EMAIL CONTENT */
+
+  function invalidatePreparedContent() {
+    copyAttemptRef.current += 1;
+
+    setFormRevision(revision => revision + 1);
+
+    setPreparedVersion(null);
+    setReviewDraft(null);
+    setManualCopyText("");
+    setComposeMessage("");
+  }
+
   function prepareEmailDraft(): QuotationEmailDraft | null {
+    setPreparedVersion({
+      formRevision,
+      basketSnapshot: currentBasketSnapshot,
+    });
     const form = formRef.current;
 
     if (!form) {
@@ -469,6 +538,15 @@ export default function RequestQuotationPage() {
       return null;
     }
 
+    const phone = read("customer-phone");
+
+    if (phone && !/^\+?[0-9\s().-]{6,40}$/.test(phone)) {
+      setComposeMessage(
+        "Enter a valid Phone / WhatsApp number (6?40 characters)."
+      );
+      form.querySelector<HTMLInputElement>("#customer-phone")?.focus();
+      return null;
+    }
     try {
       return buildQuotationEmailDraft(
         {
@@ -510,7 +588,9 @@ export default function RequestQuotationPage() {
   function handleCompose(
     provider: ComposeProvider
   ) {
+    copyAttemptRef.current += 1;
     if (!hasApprovedRecipient) {
+      setPreparedVersion({ formRevision, basketSnapshot: currentBasketSnapshot });
       setComposeMessage(
         "The company quotation email address has not yet been approved."
       );
@@ -633,6 +713,7 @@ export default function RequestQuotationPage() {
 
   /** Clipboard fallback, with selectable text when clipboard fails. */
   async function handleCopyQuotation() {
+    const copyAttempt = ++copyAttemptRef.current;
     const draft = prepareEmailDraft();
     if (!draft) return;
 
@@ -645,6 +726,7 @@ export default function RequestQuotationPage() {
         throw new Error("Clipboard API is unavailable.");
       }
       await navigator.clipboard.writeText(details);
+      if (copyAttempt !== copyAttemptRef.current) return;
       setManualCopyText("");
       setComposeMessage(
         hasApprovedRecipient
@@ -654,6 +736,7 @@ export default function RequestQuotationPage() {
               "quotation email address before sending."
       );
     } catch {
+      if (copyAttempt !== copyAttemptRef.current) return;
       setManualCopyText(details);
       setComposeMessage(
         "Automatic copying was unavailable. " +
@@ -755,11 +838,18 @@ export default function RequestQuotationPage() {
                   <BasketItemCard
                     key={item.id}
                     item={item}
-                    onQuantityChange={
-                      changeQuantity
-                    }
-                    onNotesChange={changeNotes}
-                    onRemove={removeItem}
+                    onQuantityChange={(id, quantity) => {
+                      invalidatePreparedContent();
+                      changeQuantity(id, quantity);
+                    }}
+                    onNotesChange={(id, notes) => {
+                      invalidatePreparedContent();
+                      changeNotes(id, notes);
+                    }}
+                    onRemove={(id) => {
+                      invalidatePreparedContent();
+                      removeItem(id);
+                    }}
                   />
                 ))}
               </div>
@@ -1038,6 +1128,106 @@ export default function RequestQuotationPage() {
                   </label>
                 </div>
 
+                <section
+                  aria-labelledby="quotation-review-heading"
+                  className="mt-8 rounded-xl border border-[#D9C8B0] bg-white p-5 sm:p-7"
+                >
+                  <div className="text-center">
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#B95016]">
+                      Final Review
+                    </p>
+
+                    <h3
+                      id="quotation-review-heading"
+                      className="mt-3 font-serif text-2xl text-[#30251F]"
+                    >
+                      Review Your Quotation Email
+                    </h3>
+
+                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#74675E]">
+                      Check products, quantities, delivery details and requirements before sending.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={!isLoaded || isEmpty}
+                    onClick={handlePreviewQuotation}
+                    className="mt-6 min-h-12 w-full rounded-md bg-[#30251F] px-6 py-3 text-sm font-bold text-white hover:bg-[#4B3930] disabled:opacity-45"
+                  >
+                    Preview Quotation Email
+                  </button>
+
+                  {currentReviewDraft && (
+                    <div
+                      role="region"
+                      aria-labelledby="quotation-preview-title"
+                      className="mt-7 rounded-lg border border-[#E4D7C4] bg-[#FAF7F0] p-4 sm:p-6"
+                    >
+                      <h4
+        ref={previewHeadingRef}
+        tabIndex={-1}
+        id="quotation-preview-title"
+                        className="scroll-mt-28 font-serif text-xl text-[#30251F]"
+                      >
+                        Your Email Preview
+                      </h4>
+
+                      <p className="mt-3 text-sm text-[#74675E]">
+                        Preview only. No email has been sent or saved.
+                      </p>
+
+                      <dl className="mt-5 space-y-3 text-sm">
+                        <div>
+                          <dt className="font-bold text-[#30251F]">
+                            To
+                          </dt>
+
+                          <dd className="mt-1 break-words text-[#74675E]">
+                            {hasApprovedRecipient
+                              ? recipient
+                              : "Awaiting verified company quotation email"}
+                          </dd>
+                        </div>
+
+                        <div>
+                          <dt className="font-bold text-[#30251F]">
+                            Subject
+                          </dt>
+
+                          <dd className="mt-1 break-words text-[#74675E]">
+                            {currentReviewDraft.subject}
+                          </dd>
+                        </div>
+                      </dl>
+
+                      <div className="mt-5">
+                        <label
+                          htmlFor="quotation-email-preview-body"
+                          className="form-label"
+                        >
+                          Email Body
+                        </label>
+
+                        <textarea
+                          id="quotation-email-preview-body"
+                          readOnly
+                          rows={16}
+                          value={currentReviewDraft.body}
+                          onFocus={(event) => event.currentTarget.select()}
+                          className="form-textarea mt-2"
+                        />
+                      </div>
+
+                      <p className="mt-4 text-xs leading-6 text-[#74675E]">
+                        Review before using Copy Quotation Details or an available
+                        email app. If you change the form or basket,
+                        generate a fresh preview.
+                      </p>
+                    </div>
+                  )}
+                </section>
+
                 {/* FILE 128 — EMAIL COMPOSE OPTIONS */}
 
                 <div className="mt-7 rounded-lg border border-[#D9C8B0] bg-white p-5 text-center">
@@ -1098,17 +1288,17 @@ export default function RequestQuotationPage() {
                   Copy Quotation Details
                 </button>
 
-                {composeMessage && (
+                {currentComposeMessage && (
                   <p
                     role="status"
                     aria-live="polite"
                     className="mt-5 rounded-lg border border-[#D9C8B0] bg-white p-4 text-center text-sm leading-7 text-[#30251F]"
                   >
-                    {composeMessage}
+                    {currentComposeMessage}
                   </p>
                 )}
 
-                {manualCopyText && (
+                {currentManualCopyText && (
                   <div className="mt-5">
                     <label
                       htmlFor="manual-quotation-copy"
@@ -1119,7 +1309,7 @@ export default function RequestQuotationPage() {
                     <textarea
                       id="manual-quotation-copy"
                       readOnly
-                      value={manualCopyText}
+                      value={currentManualCopyText}
                       rows={10}
                       onFocus={(event) => event.currentTarget.select()}
                       className="form-textarea"

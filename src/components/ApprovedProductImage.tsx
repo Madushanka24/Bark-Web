@@ -2,7 +2,7 @@
 import Image from "next/image";
 
 /**
- * BARK ORNAMENT — FILE 99
+ * BARK ORNAMENT — FILE 142, STEP B2
  *
  * Approved Product Photography
  *
@@ -13,34 +13,42 @@ import Image from "next/image";
  *
  * PURPOSE
  * - Display approved local photography
- * - Display a placeholder when no approved photo exists
+ * - Display approved Sanity CDN photography
+ * - Display placeholders when no approved photo exists
  * - Support responsive image optimisation
  * - Maintain predictable image aspect ratios
  * - Avoid layout shifts
  * - Respect reduced-motion preferences
  *
  * SAFETY
- * - No remote images
- * - No client-side JavaScript
- * - No database or API calls
+ * - No arbitrary remote image hosts
+ * - Only local approved paths or the configured Sanity CDN
+ * - No client-side JavaScript required
+ * - No database or API calls from this component
  * - No quotation submissions
  * - No email delivery
  *
  * IMPORTANT
  * Photos must be reviewed and approved separately.
- * Passing an approval flag is an explicit developer
+ * Passing an approval flag is an explicit application
  * declaration, not a substitute for company approval.
  */
 
 export type ApprovedPhoto = Readonly<{
   /**
-   * Local asset under:
-   * public/images/approved/
+   * Supported photograph sources:
    *
-   * Example directory format:
+   * 1. Local asset:
    * /images/approved/filename.webp
+   *
+   * 2. Sanity CDN asset:
+   * https://cdn.sanity.io/images/PROJECT/DATASET/filename.jpg
+   *
+   * Runtime validation checks both formats.
    */
-  src: `/images/approved/${string}`;
+  src:
+    | `/images/approved/${string}`
+    | `https://cdn.sanity.io/images/${string}`;
 
   /**
    * Describe the actual photograph.
@@ -121,12 +129,11 @@ const fitClasses: Record<ImageFit, string> = {
 };
 
 /**
- * Do not accept arbitrary remote URLs or image paths.
+ * Do not accept arbitrary local paths.
  *
- * The runtime check is deliberately stricter than
- * the TypeScript path type:
+ * Local image validation:
  *
- * - Only local /images/approved/ assets
+ * - Only /images/approved/ assets
  * - No path traversal
  * - No query strings or fragments
  * - No SVG files
@@ -166,6 +173,63 @@ function isApprovedLocalPath(
   }
 
   return true;
+}
+
+/* ==========================================
+   FILE 142 — STEP B2
+
+   SANITY CDN IMAGE VALIDATION
+   ========================================== */
+
+function isApprovedSanityImageUrl(
+  value: string
+): value is `https://cdn.sanity.io/images/${string}` {
+  const projectId =
+    process.env.NEXT_PUBLIC_SANITY_PROJECT_ID?.trim();
+
+  const dataset =
+    process.env.NEXT_PUBLIC_SANITY_DATASET?.trim();
+
+  if (
+    !projectId ||
+    !dataset ||
+    !/^[a-z0-9-]+$/.test(projectId) ||
+    !/^[a-z0-9_-]+$/.test(dataset)
+  ) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (
+      url.protocol !== "https:" ||
+      url.hostname !== "cdn.sanity.io" ||
+      url.port !== "" ||
+      url.username !== "" ||
+      url.password !== "" ||
+      url.search !== "" ||
+      url.hash !== ""
+    ) {
+      return false;
+    }
+
+    const prefix =
+      `/images/${projectId}/${dataset}/`;
+
+    if (!url.pathname.startsWith(prefix)) {
+      return false;
+    }
+
+    const filename =
+      url.pathname.slice(prefix.length);
+
+    return /^[a-zA-Z0-9][a-zA-Z0-9_-]*\.(?:jpg|jpeg|png|webp|avif)$/i.test(
+      filename
+    );
+  } catch {
+    return false;
+  }
 }
 
 function PlaceholderArtwork() {
@@ -251,11 +315,21 @@ function PhotographPlaceholder({
  *      label="Wooden Products"
  *    />
  *
- * 2. Approved-photo mode:
+ * 2. Approved local-photo mode:
  *
- *    Pass a real image file from
- *    public/images/approved/ together with
- *    verified alt text and approved: true.
+ *    Pass a real image from
+ *    public/images/approved/
+ *    with accurate alt text.
+ *
+ * 3. Approved Sanity-photo mode:
+ *
+ *    Pass a validated image URL from the
+ *    configured Sanity project and dataset.
+ *
+ * Important:
+ *
+ * Only published, company-approved CMS content
+ * should be passed by the server-side data reader.
  *
  * No unapproved photos should be added merely
  * to remove the placeholder.
@@ -276,7 +350,10 @@ export default function ApprovedProductImage({
     photo.approved === true &&
     typeof photo.alt === "string" &&
     photo.alt.trim().length > 0 &&
-    isApprovedLocalPath(photo.src);
+    (
+      isApprovedLocalPath(photo.src) ||
+      isApprovedSanityImageUrl(photo.src)
+    );
 
   return (
     <div

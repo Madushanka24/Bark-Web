@@ -1,9 +1,12 @@
 
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 
 import ApprovedProductImage from "@/components/ApprovedProductImage";
+import type { ApprovedPhoto } from "@/components/ApprovedProductImage";
 import { approvedHomepageImages } from "@/lib/approved-homepage-images";
+import { getSanityHomepageHero } from "@/lib/sanity-homepage-hero";
 
 /**
  * BARK ORNAMENT — FILE 102
@@ -247,7 +250,11 @@ function SectionHeading({
    Registry: approvedHomepageImages.hero
    ========================================== */
 
-function HeroVisual() {
+function HeroVisual({
+  photo = approvedHomepageImages.hero,
+}: {
+  photo?: ApprovedPhoto | null;
+}) {
   return (
     <div className="relative mx-auto w-full max-w-[590px]">
       <div
@@ -257,7 +264,7 @@ function HeroVisual() {
 
       <ApprovedProductImage
         label="Hospitality Product Collection"
-        photo={approvedHomepageImages.hero}
+        photo={photo}
         aspect="hero"
         fit="cover"
         sizes="(max-width: 1024px) 100vw, 50vw"
@@ -275,6 +282,35 @@ function HeroVisual() {
       </div>
     </div>
   );
+}
+
+/* ==========================================
+   FILE 142 — STEP C
+
+   APPROVED SANITY HOMEPAGE HERO
+   ========================================== */
+
+/**
+ * Reads only approved, published Sanity
+ * homepage photography through the
+ * existing server-side reader.
+ *
+ * The local approved-image registry remains
+ * the fallback when CMS content is missing.
+ */
+async function SanityHeroVisual() {
+  const sanityHero = await getSanityHomepageHero();
+
+  const heroPhoto: ApprovedPhoto | null =
+    sanityHero
+      ? {
+          src: sanityHero.src as ApprovedPhoto["src"],
+          alt: sanityHero.alt,
+          approved: true,
+        }
+      : approvedHomepageImages.hero;
+
+  return <HeroVisual photo={heroPhoto} />;
 }
 
 /* ==========================================
@@ -353,7 +389,9 @@ export default function HomePage() {
           </div>
 
           <div className="min-w-0 pb-2 sm:pb-4">
-            <HeroVisual />
+            <Suspense fallback={<HeroVisual />}>
+              <SanityHeroVisual />
+            </Suspense>
           </div>
         </div>
       </section>
