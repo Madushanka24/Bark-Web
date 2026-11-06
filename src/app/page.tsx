@@ -1,6 +1,7 @@
 
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
+import type { ComponentProps } from "react";
 import type { Metadata } from "next";
 
 import ApprovedProductImage from "@/components/ApprovedProductImage";
@@ -8,33 +9,24 @@ import type { ApprovedPhoto } from "@/components/ApprovedProductImage";
 import { approvedHomepageImages } from "@/lib/approved-homepage-images";
 import { getSanityHomepageHero } from "@/lib/sanity-homepage-hero";
 
+import {
+  getSanityHomepageSectionImages,
+} from "@/lib/sanity-homepage-sections";
+
+import type {
+  SanityHomepageSlot,
+} from "@/lib/sanity-homepage-sections";
+
 /**
- * BARK ORNAMENT — FILE 102
+ * BARK ORNAMENT — HOMEPAGE
  *
- * Homepage: Golden Coastal Luxury
+ * Theme: Golden Coastal Luxury
  *
- * Connects the approved homepage photography registry
- * to all existing ApprovedProductImage components.
+ * UI FIX 03:
+ * Removed the duplicate final enquiry section.
+ * The shared footer retains the quotation CTA.
  *
- * Image slots:
- * - Hero: 1
- * - Company: 1
- * - Product categories: 10
- * - Hospitality solutions: 1
- * - Knowledge articles: 3
- *
- * Total: 16 image slots.
- *
- * IMPORTANT:
- * - No images are approved or added by this file.
- * - Null registry entries display placeholders.
- * - All seven homepage sections are preserved.
- * - All ten product categories are preserved.
- * - All existing navigation routes are preserved.
- * - Hero text is visible without entrance animations.
- * - Responsive accessibility and reduced motion retained.
- * - No database or API operations.
- * - No quotation submissions or actual email delivery.
+ * Existing Sanity CMS image integrations preserved.
  */
 
 export const metadata: Metadata = {
@@ -148,11 +140,6 @@ const markets = [
 
 /* ==========================================
    KNOWLEDGE CENTRE DATA
-
-   imageKey must match a File 101 registry key.
-
-   Only GSM currently has a dedicated article
-   detail route in this homepage listing.
    ========================================== */
 
 const insights = [
@@ -246,8 +233,6 @@ function SectionHeading({
 
 /* ==========================================
    HERO PRODUCT VISUAL
-
-   Registry: approvedHomepageImages.hero
    ========================================== */
 
 function HeroVisual({
@@ -285,19 +270,9 @@ function HeroVisual({
 }
 
 /* ==========================================
-   FILE 142 — STEP C
-
-   APPROVED SANITY HOMEPAGE HERO
+   FILE 142 — SANITY HOMEPAGE HERO
    ========================================== */
 
-/**
- * Reads only approved, published Sanity
- * homepage photography through the
- * existing server-side reader.
- *
- * The local approved-image registry remains
- * the fallback when CMS content is missing.
- */
 async function SanityHeroVisual() {
   const sanityHero = await getSanityHomepageHero();
 
@@ -314,12 +289,63 @@ async function SanityHeroVisual() {
 }
 
 /* ==========================================
+   FILE 144 — SANITY SECTION PHOTOGRAPHY
+   ========================================== */
+
+const getHomepageSectionsOnce = cache(
+  getSanityHomepageSectionImages
+);
+
+type HomepageSectionPhotoProps =
+  ComponentProps<typeof ApprovedProductImage> & {
+    slot: SanityHomepageSlot;
+  };
+
+async function AsyncHomepageSectionPhoto({
+  slot,
+  ...imageProps
+}: HomepageSectionPhotoProps) {
+  const images = await getHomepageSectionsOnce();
+
+  const photo =
+    images[slot] ?? imageProps.photo;
+
+  return (
+    <ApprovedProductImage
+      {...imageProps}
+      photo={photo}
+    />
+  );
+}
+
+function HomepageSectionPhoto({
+  slot,
+  ...imageProps
+}: HomepageSectionPhotoProps) {
+  return (
+    <Suspense
+      fallback={
+        <ApprovedProductImage
+          {...imageProps}
+        />
+      }
+    >
+      <AsyncHomepageSectionPhoto
+        slot={slot}
+        {...imageProps}
+      />
+    </Suspense>
+  );
+}
+
+/* ==========================================
    HOMEPAGE
    ========================================== */
 
 export default function HomePage() {
   return (
     <main className="min-w-0 overflow-x-clip bg-[#FAF7F0] text-[#30251F]">
+
       {/* =====================================
           1. HERO SECTION
           ===================================== */}
@@ -339,25 +365,31 @@ export default function HomePage() {
         />
 
         <div className="relative mx-auto grid w-full max-w-[1320px] min-w-0 items-center gap-12 px-5 pb-16 pt-16 sm:px-8 sm:pb-20 sm:pt-20 lg:grid-cols-2 lg:gap-14 lg:py-24 xl:gap-20">
-          {/*
-            Hero text remains immediately visible.
-            No opacity-zero entrance animation.
-          */}
 
           <div className="min-w-0">
             <p className="mb-5 text-xs font-bold uppercase leading-6 tracking-[0.18em] text-[#E3B65D] sm:mb-6 sm:tracking-[0.22em]">
               Bark Ornament (Pvt) Ltd
             </p>
+           
+              <h1
+                id="home-hero-title"
+                className="max-w-2xl break-words font-serif text-[clamp(2.35rem,5vw,4.4rem)] font-normal leading-[1.13] tracking-[-0.025em]"
+                style={{
+                  color: "#FAF7F0",
+                }}
+              >
+                Thoughtfully Crafted
 
-            <h1
-              id="home-hero-title"
-              className="max-w-2xl break-words font-serif text-[clamp(2.35rem,5vw,4.4rem)] font-normal leading-[1.13] tracking-[-0.025em] text-[#FAF7F0]"
-            >
-              Thoughtfully Crafted
-              <span className="mt-2 block text-[#E3B65D]">
-                for Hospitality.
-              </span>
-            </h1>
+                <span
+                  className="mt-2 block"
+                  style={{
+                    color: "#E3B65D",
+                  }}
+                >
+                  for Hospitality.
+                </span>
+              </h1>
+
 
             <p className="mt-6 max-w-xl text-base leading-8 text-[#E9DDC9] sm:mt-7 sm:text-lg">
               Customized printing, wooden accessories,
@@ -398,8 +430,6 @@ export default function HomePage() {
 
       {/* =====================================
           2. COMPANY INTRODUCTION
-
-          Registry: approvedHomepageImages.company
           ===================================== */}
 
       <section
@@ -407,8 +437,10 @@ export default function HomePage() {
         className="section bg-[#FAF7F0]"
       >
         <div className="container grid min-w-0 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+
           <div className="min-w-0">
-            <ApprovedProductImage
+            <HomepageSectionPhoto
+              slot="company"
               label="Company and Production Photography"
               photo={approvedHomepageImages.company}
               aspect="landscape"
@@ -454,8 +486,6 @@ export default function HomePage() {
 
       {/* =====================================
           3. PRODUCT COLLECTIONS
-
-          Registry: approvedHomepageImages.categories
           ===================================== */}
 
       <section
@@ -479,7 +509,8 @@ export default function HomePage() {
                 href={`/products?category=${category.slug}`}
                 className="group min-w-0 overflow-hidden rounded-xl border border-[#D9C8B0] bg-[#FAF7F0] shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016] motion-reduce:transform-none motion-reduce:transition-none"
               >
-                <ApprovedProductImage
+                <HomepageSectionPhoto
+                  slot={category.slug}
                   label={category.name}
                   photo={
                     approvedHomepageImages.categories[
@@ -534,8 +565,6 @@ export default function HomePage() {
 
       {/* =====================================
           4. CUSTOM HOSPITALITY SOLUTIONS
-
-          Registry: approvedHomepageImages.solutions
           ===================================== */}
 
       <section
@@ -543,6 +572,7 @@ export default function HomePage() {
         className="section bg-[#FAF7F0]"
       >
         <div className="container grid min-w-0 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+
           <div className="min-w-0">
             <p className="eyebrow">
               Customized Hospitality Solutions
@@ -597,7 +627,8 @@ export default function HomePage() {
           </div>
 
           <div className="min-w-0">
-            <ApprovedProductImage
+            <HomepageSectionPhoto
+              slot="solutions"
               label="Custom Hospitality Product Photography"
               photo={approvedHomepageImages.solutions}
               aspect="landscape"
@@ -671,8 +702,6 @@ export default function HomePage() {
 
       {/* =====================================
           6. KNOWLEDGE CENTRE
-
-          Registry: approvedHomepageImages.knowledge
           ===================================== */}
 
       <section
@@ -695,7 +724,8 @@ export default function HomePage() {
                 key={article.imageKey}
                 className="flex min-w-0 flex-col overflow-hidden rounded-xl bg-[#FAF7F0] shadow-sm"
               >
-                <ApprovedProductImage
+                <HomepageSectionPhoto
+                  slot={article.imageKey}
                   label={`Knowledge Article ${index + 1}`}
                   photo={
                     approvedHomepageImages.knowledge[
@@ -736,7 +766,7 @@ export default function HomePage() {
           <div className="mt-12 text-center">
             <Link
               href="/insights/knowledge"
-              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#30251F] px-7 py-3 text-sm font-bold text-[#FAF7F0] transition-colors duration-200 hover:bg-[#49372C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016] motion-reduce:transition-none"
+              className={primaryButton}
             >
               Explore Knowledge Hub
               <Arrow />
@@ -745,55 +775,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* =====================================
-          7. FINAL ENQUIRY SECTION
-          ===================================== */}
+      {/*
+        UI FIX 03:
 
-      <section
-        aria-labelledby="home-enquiry-title"
-        className="relative isolate overflow-hidden bg-[#30251F] py-20 text-[#FAF7F0] md:py-28"
-      >
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full border border-[#C59A45]/20"
-        />
+        The original "Let's Work Together"
+        final enquiry section has been removed.
 
-        <div className="container relative z-10 text-center">
-          <p className="mb-5 text-xs font-bold uppercase tracking-[0.18em] text-[#E3B65D]">
-            Let&apos;s Work Together
-          </p>
+        The shared Footer.tsx already provides
+        the quotation call-to-action.
 
-          <h2
-            id="home-enquiry-title"
-            className="mx-auto max-w-3xl font-serif text-3xl leading-tight text-[#FAF7F0] sm:text-4xl lg:text-5xl"
-          >
-            Have a Hospitality Project in Mind?
-          </h2>
+        No duplicate quotation section is
+        rendered here.
+      */}
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[#E9DDC9]">
-            Tell us about the products, quantities,
-            materials and customization you need.
-            Start your enquiry with Bark Ornament.
-          </p>
-
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-            <Link
-              href="/request-quotation"
-              className={primaryButton}
-            >
-              Request a Quotation
-              <Arrow />
-            </Link>
-
-            <Link
-              href="/contact"
-              className={lightOutlineButton}
-            >
-              Contact Us
-            </Link>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

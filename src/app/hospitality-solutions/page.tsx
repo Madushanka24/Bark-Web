@@ -20,8 +20,9 @@ export const metadata: Metadata = {
  * src/components/Header.tsx
  * src/components/Footer.tsx
  *
- * Only this page is created.
- * No existing navigation files are modified.
+ * UI FIX 09:
+ * Corrected dark-background heading visibility
+ * in the hero and final CTA sections.
  *
  * No forms, API calls, database operations,
  * quotation submissions or automated emails.
@@ -212,6 +213,7 @@ function Arrow({ down = false }: { down?: boolean }) {
  * Decorative, CSS/SVG-only editorial illustration.
  * Not presented as actual Bark Ornament photography.
  */
+
 function SolutionsArtwork() {
   return (
     <div
@@ -281,7 +283,11 @@ function SolutionsArtwork() {
 export default function HospitalitySolutionsPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
-      {/* 1. HERO */}
+
+      {/* =====================================
+          1. HERO
+          ===================================== */}
+
       <section
         aria-labelledby="solutions-title"
         className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-[#FAF7F0] sm:px-8 sm:py-20 lg:py-24"
@@ -322,12 +328,23 @@ export default function HospitalitySolutionsPage() {
                 Bark Ornament · Hospitality Solutions
               </p>
 
+              {/* UI FIX 09 — TOP HERO HEADING */}
+
               <h1
                 id="solutions-title"
                 className="mt-6 max-w-4xl font-serif text-4xl leading-[1.12] sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
               >
                 Designed Around the Way
-                <span className="mt-2 block text-[#E3B65D]">
+
+                <span
+                  className="mt-2 block"
+                  style={{
+                    color: "#E3B65D",
+                  }}
+                >
                   Hospitality Works.
                 </span>
               </h1>
@@ -369,7 +386,10 @@ export default function HospitalitySolutionsPage() {
         </div>
       </section>
 
-      {/* 2. SOLUTION AREA NAVIGATION */}
+      {/* =====================================
+          2. SOLUTION AREA NAVIGATION
+          ===================================== */}
+
       <section
         id="solution-areas"
         aria-labelledby="solution-areas-title"
@@ -435,7 +455,10 @@ export default function HospitalitySolutionsPage() {
         </div>
       </section>
 
-      {/* 3. DEPARTMENT-SPECIFIC SOLUTIONS */}
+      {/* =====================================
+          3. DEPARTMENT-SPECIFIC SOLUTIONS
+          ===================================== */}
+
       {solutions.map((solution, index) => (
         <section
           key={solution.id}
@@ -529,7 +552,10 @@ export default function HospitalitySolutionsPage() {
         </section>
       ))}
 
-      {/* 4. HOW TO PREPARE A REQUIREMENT */}
+      {/* =====================================
+          4. HOW TO PREPARE A REQUIREMENT
+          ===================================== */}
+
       <section
         aria-labelledby="approach-title"
         className="border-t border-[#E0D2BF] bg-[#FAF7F0] px-5 py-16 sm:px-8 sm:py-20"
@@ -578,7 +604,10 @@ export default function HospitalitySolutionsPage() {
         </div>
       </section>
 
-      {/* 5. KNOWLEDGE CONNECTION */}
+      {/* =====================================
+          5. KNOWLEDGE CONNECTION
+          ===================================== */}
+
       <section
         aria-labelledby="knowledge-connection-title"
         className="border-t border-[#E0D2BF] bg-[#F1E8DB] px-5 py-16 sm:px-8 sm:py-20"
@@ -611,7 +640,13 @@ export default function HospitalitySolutionsPage() {
         </div>
       </section>
 
-      {/* 6. SAFE FINAL CTA */}
+      {/* =====================================
+          6. SAFE FINAL CTA
+
+          UI FIX 09:
+          Explicit light heading color
+          ===================================== */}
+
       <section
         aria-labelledby="solutions-cta-title"
         className="bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:px-8 sm:py-20"
@@ -624,6 +659,9 @@ export default function HospitalitySolutionsPage() {
           <h2
             id="solutions-cta-title"
             className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
           >
             Discuss Your Next Product Requirement.
           </h2>

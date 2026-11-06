@@ -4,6 +4,13 @@ import Link from "next/link";
 /* =========================================
    BARK ORNAMENT - WEBSITE FOOTER
    Theme: Golden Coastal Luxury
+
+   UI FIXES:
+   - Aligned footer columns
+   - Consistent gold footer headings
+   - Visible quotation section typography
+   - White quotation button text
+   - Responsive desktop and mobile layout
    ========================================= */
 
 const companyLinks = [
@@ -66,7 +73,6 @@ const productLinks = [
 
 /* =========================================
    CACHED CURRENT YEAR
-   Compatible with Next.js Cache Components
    ========================================= */
 
 async function getCurrentYear() {
@@ -75,53 +81,90 @@ async function getCurrentYear() {
 }
 
 /* =========================================
+   FOOTER DESIGN STYLES
+   ========================================= */
+
+const headingClass =
+  "mb-6 flex h-10 min-w-0 items-center border-b border-[#6D584A] pb-3 font-sans text-sm font-bold uppercase tracking-[0.12em] text-[#E3B65D]";
+
+const headingStyle = {
+  color: "#E3B65D",
+  fontFamily: "Arial, Helvetica, sans-serif",
+  fontSize: "14px",
+  fontWeight: 700,
+  lineHeight: "20px",
+} as const;
+
+const linkClass =
+  "inline-block text-sm leading-7 text-[#E9DDC9] transition-colors duration-200 hover:text-white hover:underline hover:underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E3B65D]";
+
+/* =========================================
    FOOTER COMPONENT
    ========================================= */
 
 export default async function Footer() {
   const year = await getCurrentYear();
 
-  const headingClass =
-    "mb-6 flex min-h-10 items-center border-b border-[#6D584A] pb-3 font-sans text-sm font-bold uppercase tracking-[0.12em] text-[#E3B65D]";
-
-  const linkClass =
-    "inline-block text-sm leading-7 text-[#E9DDC9] transition-colors duration-200 hover:text-white hover:underline hover:underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E3B65D]";
-
   return (
     <footer className="w-full bg-[#30251F] text-[#FAF7F0]">
 
       {/* =====================================
           QUOTATION CALL TO ACTION
+          UI FIX 04 - TEXT VISIBILITY
           ===================================== */}
 
       <div className="border-b border-[#6D584A]">
         <div className="mx-auto grid w-full max-w-[1200px] items-center gap-8 px-5 py-14 md:grid-cols-[1fr_auto] md:px-8 md:py-20">
 
           <div className="max-w-2xl">
-            <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-[#E3B65D]">
+
+            <p
+              className="mb-4 text-xs font-bold uppercase tracking-[0.18em]"
+              style={{
+                color: "#E3B65D",
+              }}
+            >
               Customized Hospitality Solutions
             </p>
 
-            <h2 className="font-serif text-3xl leading-tight text-[#FAF7F0] sm:text-4xl md:text-5xl">
+            <h2
+              className="font-serif text-3xl leading-tight sm:text-4xl md:text-5xl"
+              style={{
+                color: "#FAF7F0",
+                fontWeight: 500,
+                lineHeight: 1.2,
+              }}
+            >
               Let&apos;s create something exceptional.
             </h2>
 
-            <p className="mt-5 max-w-xl text-base leading-8 text-[#E9DDC9]">
+            <p
+              className="mt-5 max-w-xl text-base leading-8"
+              style={{
+                color: "#E9DDC9",
+              }}
+            >
               Explore customized products for hotels and
               resorts. Share your requirements with our
               team and request a quotation for your next
               project.
             </p>
+
           </div>
 
           <div className="flex justify-start md:justify-end">
+
             <Link
               href="/request-quotation"
-              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#B95016] px-7 py-4 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D]"
+              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#B95016] px-7 py-4 text-sm font-bold transition-colors duration-200 hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
+              style={{
+                color: "#FFFFFF",
+              }}
             >
               Request a Quotation
               <span aria-hidden="true">↗</span>
             </Link>
+
           </div>
 
         </div>
@@ -141,19 +184,24 @@ export default async function Footer() {
 
           <div className="min-w-0">
 
-            <div className="mb-6 flex min-h-10 items-center border-b border-[#6D584A] pb-3">
+            <div className="mb-6 flex h-10 min-w-0 items-center border-b border-[#6D584A] pb-3">
+
               <Link
                 href="/"
                 aria-label="Bark Ornament - Homepage"
                 className="inline-flex flex-col"
               >
-                <span className="font-serif text-xl font-semibold tracking-wide text-[#FAF7F0] sm:text-2xl">
+                <span
+                  className="font-serif text-xl font-semibold tracking-wide sm:text-2xl"
+                  style={{ color: "#FAF7F0" }}
+                >
                   BARK{" "}
-                  <span className="text-[#E3B65D]">
+                  <span style={{ color: "#E3B65D" }}>
                     ORNAMENT
                   </span>
                 </span>
               </Link>
+
             </div>
 
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#E3B65D]">
@@ -183,7 +231,11 @@ export default async function Footer() {
             aria-label="Company footer navigation"
             className="min-w-0"
           >
-            <h3 className={headingClass}>
+
+            <h3
+              className={headingClass}
+              style={headingStyle}
+            >
               Explore
             </h3>
 
@@ -199,6 +251,7 @@ export default async function Footer() {
                 </li>
               ))}
             </ul>
+
           </nav>
 
           {/* =================================
@@ -209,11 +262,16 @@ export default async function Footer() {
             aria-label="Product footer navigation"
             className="min-w-0"
           >
-            <h3 className={headingClass}>
+
+            <h3
+              className={headingClass}
+              style={headingStyle}
+            >
               Our Products
             </h3>
 
             <ul className="m-0 list-none space-y-3 p-0">
+
               {productLinks.map((item) => (
                 <li key={item.href}>
                   <Link
@@ -231,21 +289,24 @@ export default async function Footer() {
                   className="inline-flex items-center gap-2 text-sm font-semibold text-[#E3B65D] transition-colors duration-200 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D]"
                 >
                   View All Products
-                  <span aria-hidden="true">
-                    →
-                  </span>
+                  <span aria-hidden="true">→</span>
                 </Link>
               </li>
+
             </ul>
+
           </nav>
 
           {/* =================================
-              COLUMN 4 - CONTACT & RESOURCES
+              COLUMN 4 - CONTACT AND RESOURCES
               ================================= */}
 
           <div className="min-w-0">
 
-            <h3 className={headingClass}>
+            <h3
+              className={headingClass}
+              style={headingStyle}
+            >
               Get in Touch
             </h3>
 
@@ -268,17 +329,24 @@ export default async function Footer() {
 
             </address>
 
-            {/* RESOURCES */}
+            {/* =================================
+                RESOURCES
+                ================================= */}
 
             <nav
               aria-label="Footer resources navigation"
               className="mt-10"
             >
-              <h3 className={headingClass}>
+
+              <h3
+                className={headingClass}
+                style={headingStyle}
+              >
                 Resources
               </h3>
 
               <ul className="m-0 list-none space-y-3 p-0">
+
                 {resourceLinks.map((item) => (
                   <li key={item.href}>
                     <Link
@@ -289,7 +357,9 @@ export default async function Footer() {
                     </Link>
                   </li>
                 ))}
+
               </ul>
+
             </nav>
 
           </div>

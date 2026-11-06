@@ -5,6 +5,15 @@
    BARK ORNAMENT - GLOBAL DESIGN SYSTEM
    Theme: Golden Coastal Luxury
    Animation: Subtle Luxury
+
+   UI FIX 15:
+   Removed the forced global heading color.
+
+   Headings now inherit their section's text color
+   unless an explicit text color is applied.
+
+   This prevents dark headings from becoming
+   invisible on dark background sections.
    ========================================= */
 
 :root {
@@ -45,7 +54,10 @@
   --transition-slow: 600ms ease;
 }
 
-/* Tailwind CSS v4 theme integration */
+/* =========================================
+   TAILWIND CSS V4 THEME INTEGRATION
+   ========================================= */
+
 @theme inline {
   --color-gold: var(--color-gold);
   --color-orange: var(--color-orange);
@@ -83,6 +95,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* =========================================
+   GLOBAL TYPOGRAPHY
+   ========================================= */
+
 h1,
 h2,
 h3,
@@ -93,13 +109,30 @@ p {
   margin-top: 0;
 }
 
+/*
+ * UI FIX 15 — IMPORTANT
+ *
+ * Previously:
+ * color: var(--color-espresso);
+ *
+ * That declaration forced dark text on every
+ * heading, even inside dark sections.
+ *
+ * It has been removed.
+ *
+ * Headings inherit their text color unless
+ * a specific text color is provided.
+ *
+ * Light sections inherit espresso from body.
+ * Dark sections can inherit ivory or gold.
+ */
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  color: var(--color-espresso);
   font-family: var(--font-heading);
   font-weight: 500;
   line-height: 1.2;
@@ -155,6 +188,10 @@ video {
 img {
   display: block;
 }
+
+/* =========================================
+   TEXT SELECTION
+   ========================================= */
 
 ::selection {
   background-color: var(--color-gold);
@@ -509,4 +546,3 @@ img {
     transform: none;
   }
 }
-

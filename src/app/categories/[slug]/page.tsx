@@ -18,9 +18,23 @@ type Collection = {
 };
 
 /**
- * Keep these ten names and slugs aligned with File 74.
- * This is editorial copy, not a live product inventory.
+ * BARK ORNAMENT — CATEGORY DETAIL PAGES
+ *
+ * File: src/app/categories/[slug]/page.tsx
+ *
+ * UI FIX 14:
+ * - Corrected dark-background hero headings.
+ * - Corrected bottom quotation CTA heading.
+ * - Corrected Suspense loading heading.
+ * - Standardized primary buttons to brand orange.
+ *
+ * All ten category names and slugs are preserved.
+ * Editorial descriptions are not live inventory.
+ *
+ * No database access, quotation submissions
+ * or automated email delivery.
  */
+
 const collections = [
   {
     slug: "printing-stationery",
@@ -236,17 +250,17 @@ function findCollection(slug: string) {
 
 /**
  * Pre-render the ten established category slugs.
- * Unknown category slugs are rejected by
- * the existing notFound() validation.
+ * Unknown slugs are rejected with notFound().
  */
+
 export function generateStaticParams() {
   return collections.map(({ slug }) => ({ slug }));
 }
 
 /**
- * Each collection receives its own
- * SEO title and description.
+ * Category-specific SEO metadata.
  */
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -256,7 +270,9 @@ export async function generateMetadata({
   if (!category) notFound();
 
   return {
-    alternates: { canonical: `/categories/${category.slug}` },
+    alternates: {
+      canonical: `/categories/${category.slug}`,
+    },
     title: `${category.name} | Bark Ornament`,
     description: category.description,
   };
@@ -265,6 +281,20 @@ export async function generateMetadata({
 function SmallArrow() {
   return <span aria-hidden="true">→</span>;
 }
+
+/* ==========================================
+   REUSABLE BUTTON STYLES
+   ========================================== */
+
+const primaryButton =
+  "inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#B95016] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none";
+
+const outlineButton =
+  "inline-flex min-h-12 items-center justify-center gap-3 rounded-md border border-[#C59A45] px-6 py-3 text-sm font-bold text-[#FAF7F0] transition-colors duration-200 hover:bg-[#49362B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none";
+
+/* ==========================================
+   CATEGORY DETAIL CONTENT
+   ========================================== */
 
 async function CategoryDetailContent({
   params,
@@ -290,7 +320,12 @@ async function CategoryDetailContent({
 
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
-      {/* CATEGORY HERO */}
+
+      {/* =====================================
+          1. CATEGORY HERO
+          UI FIX 14 — HEADING VISIBILITY
+          ===================================== */}
+
       <section
         aria-labelledby="category-title"
         className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-[#FAF7F0] sm:px-8 sm:py-20 lg:py-24"
@@ -299,12 +334,16 @@ async function CategoryDetailContent({
           aria-hidden="true"
           className="pointer-events-none absolute -right-32 -top-40 h-96 w-96 rounded-full border border-[#C59A45]/20"
         />
+
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -bottom-48 -left-32 h-[440px] w-[440px] rounded-full border border-[#C59A45]/15"
         />
 
         <div className="relative mx-auto max-w-7xl">
+
+          {/* BREADCRUMB */}
+
           <nav
             aria-label="Breadcrumb"
             className="mb-12 text-sm text-[#E9DDC9]"
@@ -358,9 +397,14 @@ async function CategoryDetailContent({
                 {category.eyebrow}
               </p>
 
+              {/* UI FIX 14 — CATEGORY NAME */}
+
               <h1
                 id="category-title"
                 className="mt-6 max-w-3xl font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
               >
                 {category.name}
               </h1>
@@ -376,7 +420,7 @@ async function CategoryDetailContent({
               <div className="mt-9 flex flex-wrap gap-4">
                 <Link
                   href={catalogueHref}
-                  className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#E3B65D] px-6 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+                  className={primaryButton}
                 >
                   Browse category products
                   <SmallArrow />
@@ -384,61 +428,69 @@ async function CategoryDetailContent({
 
                 <Link
                   href="/categories"
-                  className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md border border-[#C59A45] px-6 py-3 text-sm font-bold text-[#FAF7F0] transition-colors hover:bg-[#49362B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+                  className={outlineButton}
                 >
                   All categories
                 </Link>
               </div>
             </div>
 
-            {/* Approved photo, with original editorial artwork as fallback */}
+            {/* APPROVED IMAGE OR EXISTING FALLBACK */}
+
             {approvedHomepageImages.categories[category.slug] ? (
               <ApprovedProductImage
                 label={category.name}
-                photo={approvedHomepageImages.categories[category.slug]}
+                photo={
+                  approvedHomepageImages.categories[
+                    category.slug
+                  ]
+                }
                 aspect="portrait"
                 fit="cover"
                 sizes="(max-width: 1024px) 100vw, 360px"
                 className="mx-auto min-h-64 max-w-sm border border-[#C59A45]/50 shadow-2xl sm:min-h-80"
               />
             ) : (
-            <div
-              className="relative mx-auto flex min-h-64 w-full max-w-sm items-center justify-center overflow-hidden rounded-2xl border border-[#C59A45]/50 bg-[#463427] p-8 text-center shadow-2xl sm:min-h-80"
-              aria-label={`Editorial collection illustration for ${category.name}`}
-            >
               <div
-                aria-hidden="true"
-                className="absolute -left-14 -top-14 h-48 w-48 rounded-full border border-[#C59A45]/25"
-              />
-
-              <div
-                aria-hidden="true"
-                className="absolute -bottom-16 -right-12 h-60 w-60 rounded-full border border-[#C59A45]/25"
-              />
-
-              <div className="relative w-full rounded-xl border border-[#C59A45]/50 px-7 py-10">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#E3B65D]">
-                  Bark Ornament
-                </p>
-
-                <p
+                className="relative mx-auto flex min-h-64 w-full max-w-sm items-center justify-center overflow-hidden rounded-2xl border border-[#C59A45]/50 bg-[#463427] p-8 text-center shadow-2xl sm:min-h-80"
+                aria-label={`Editorial collection illustration for ${category.name}`}
+              >
+                <div
                   aria-hidden="true"
-                  className="mt-6 font-serif text-7xl text-[#E3B65D]"
-                >
-                  {category.number}
-                </p>
+                  className="absolute -left-14 -top-14 h-48 w-48 rounded-full border border-[#C59A45]/25"
+                />
 
-                <p className="mt-5 text-xs uppercase tracking-[0.16em] text-[#E9DDC9]">
-                  The Collection
-                </p>
+                <div
+                  aria-hidden="true"
+                  className="absolute -bottom-16 -right-12 h-60 w-60 rounded-full border border-[#C59A45]/25"
+                />
+
+                <div className="relative w-full rounded-xl border border-[#C59A45]/50 px-7 py-10">
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#E3B65D]">
+                    Bark Ornament
+                  </p>
+
+                  <p
+                    aria-hidden="true"
+                    className="mt-6 font-serif text-7xl text-[#E3B65D]"
+                  >
+                    {category.number}
+                  </p>
+
+                  <p className="mt-5 text-xs uppercase tracking-[0.16em] text-[#E9DDC9]">
+                    The Collection
+                  </p>
+                </div>
               </div>
-            </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* PRODUCT TYPE EXAMPLES */}
+      {/* =====================================
+          2. PRODUCT TYPE EXAMPLES
+          ===================================== */}
+
       <section
         aria-labelledby="examples-title"
         className="px-5 py-16 sm:px-8 sm:py-20"
@@ -498,7 +550,10 @@ async function CategoryDetailContent({
         </div>
       </section>
 
-      {/* PRODUCT SELECTION GUIDANCE */}
+      {/* =====================================
+          3. PRODUCT SELECTION GUIDANCE
+          ===================================== */}
+
       <section
         aria-labelledby="planning-title"
         className="border-y border-[#E0D2BF] bg-[#F1E8DB] px-5 py-16 sm:px-8 sm:py-20"
@@ -548,7 +603,10 @@ async function CategoryDetailContent({
         </div>
       </section>
 
-      {/* MORE CATEGORIES */}
+      {/* =====================================
+          4. MORE CATEGORIES
+          ===================================== */}
+
       <section
         aria-labelledby="next-collections-title"
         className="px-5 py-16 sm:px-8 sm:py-20"
@@ -587,13 +645,18 @@ async function CategoryDetailContent({
                 {approvedHomepageImages.categories[item.slug] && (
                   <ApprovedProductImage
                     label={item.name}
-                    photo={approvedHomepageImages.categories[item.slug]}
+                    photo={
+                      approvedHomepageImages.categories[
+                        item.slug
+                      ]
+                    }
                     aspect="wide"
                     fit="cover"
                     sizes="(max-width: 640px) 100vw, 33vw"
                     className="mb-4 min-h-32"
                   />
                 )}
+
                 <span className="text-xs font-bold uppercase tracking-[0.18em] text-[#A94C19]">
                   Collection {item.number}
                 </span>
@@ -608,7 +671,11 @@ async function CategoryDetailContent({
         </div>
       </section>
 
-      {/* QUOTATION NAVIGATION — NO SUBMISSION */}
+      {/* =====================================
+          5. QUOTATION NAVIGATION
+          UI FIX 14 — HEADING & BUTTON COLORS
+          ===================================== */}
+
       <section
         aria-labelledby="quote-title"
         className="bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:px-8 sm:py-20"
@@ -621,6 +688,9 @@ async function CategoryDetailContent({
           <h2
             id="quote-title"
             className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
           >
             Have a specific requirement?
           </h2>
@@ -635,7 +705,7 @@ async function CategoryDetailContent({
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/request-quotation"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+              className={primaryButton}
             >
               Request a quotation
               <SmallArrow />
@@ -643,7 +713,7 @@ async function CategoryDetailContent({
 
             <Link
               href={catalogueHref}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[#C59A45] px-7 py-3 text-sm font-bold text-[#FAF7F0] transition-colors hover:bg-[#49362B] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+              className={outlineButton}
             >
               Browse products
             </Link>
@@ -659,12 +729,15 @@ async function CategoryDetailContent({
   );
 }
 
+/* ==========================================
+   NEXT.JS 16 INSTANT NAVIGATION
+   ========================================== */
+
 /**
- * Category detail page - Next.js 16 Instant Navigation.
- *
  * URL-dependent category content is rendered
  * inside a Suspense boundary.
  */
+
 export default function CategoryDetailPage({
   params,
 }: PageProps) {
@@ -678,7 +751,14 @@ export default function CategoryDetailPage({
                 Bark Ornament Collections
               </p>
 
-              <h1 className="mt-6 font-serif text-3xl sm:text-5xl">
+              {/* UI FIX 14 — LOADING HEADING */}
+
+              <h1
+                className="mt-6 font-serif text-3xl sm:text-5xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
+              >
                 Explore Our Product Collections
               </h1>
 

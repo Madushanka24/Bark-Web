@@ -12,8 +12,7 @@ export const metadata: Metadata = {
  * BARK ORNAMENT — FILE 81
  * About Us & Company Story
  *
- * One new file:
- * src/app/about/page.tsx
+ * File: src/app/about/page.tsx
  *
  * Company history:
  * 1998 — Bees Digital
@@ -21,6 +20,11 @@ export const metadata: Metadata = {
  * Today — Bark Ornament (Pvt) Ltd
  *
  * Does not assert an unverified incorporation date.
+ *
+ * UI FIX 07:
+ * Correct dark-background heading visibility in:
+ * 1. About Us hero
+ * 2. Discover Our Collections CTA
  *
  * No database calls, API requests, server actions,
  * quotation submissions, email delivery or new packages.
@@ -135,6 +139,7 @@ function Arrow() {
  * Replace with approved company photography
  * in a future one-file milestone if desired.
  */
+
 function BrandMotif() {
   return (
     <div
@@ -167,7 +172,10 @@ function BrandMotif() {
 export default function AboutPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
-      {/* 1. HERO AND BREADCRUMB */}
+      {/* =====================================
+          1. HERO AND BREADCRUMB
+          ===================================== */}
+
       <section
         aria-labelledby="about-title"
         className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-[#FAF7F0] sm:px-8 sm:py-20 lg:py-24"
@@ -214,13 +222,23 @@ export default function AboutPage() {
                 Bark Ornament · Our Story
               </p>
 
+              {/* UI FIX 07 — HERO HEADING */}
+
               <h1
                 id="about-title"
                 className="mt-6 max-w-3xl font-serif text-4xl leading-[1.12] sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
               >
                 A Story of Craft.
 
-                <span className="mt-2 block text-[#E3B65D]">
+                <span
+                  className="mt-2 block"
+                  style={{
+                    color: "#E3B65D",
+                  }}
+                >
                   A Focus on Hospitality.
                 </span>
               </h1>
@@ -258,7 +276,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 2. WHO WE ARE */}
+      {/* =====================================
+          2. WHO WE ARE
+          ===================================== */}
+
       <section
         aria-labelledby="who-we-are-title"
         className="px-5 py-16 sm:px-8 sm:py-20"
@@ -305,7 +326,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 3. COMPANY HISTORY */}
+      {/* =====================================
+          3. COMPANY HISTORY
+          ===================================== */}
+
       <section
         id="our-journey"
         aria-labelledby="journey-title"
@@ -362,7 +386,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 4. PRODUCT CAPABILITIES */}
+      {/* =====================================
+          4. PRODUCT CAPABILITIES
+          ===================================== */}
+
       <section
         aria-labelledby="capabilities-title"
         className="px-5 py-16 sm:px-8 sm:py-20"
@@ -428,7 +455,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 5. HOW WE WORK */}
+      {/* =====================================
+          5. HOW WE WORK
+          ===================================== */}
+
       <section
         aria-labelledby="approach-title"
         className="border-y border-[#E0D2BF] bg-[#F1E8DB] px-5 py-16 sm:px-8 sm:py-20"
@@ -471,7 +501,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 6. INTERNATIONAL MARKETS */}
+      {/* =====================================
+          6. INTERNATIONAL MARKETS
+          ===================================== */}
+
       <section
         aria-labelledby="markets-title"
         className="px-5 py-16 sm:px-8 sm:py-20"
@@ -525,7 +558,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 7. SAFE NAVIGATION — NO FORM OR POST REQUEST */}
+      {/* =====================================
+          7. SAFE NAVIGATION
+          NO FORM OR POST REQUEST
+          ===================================== */}
+
       <section
         aria-labelledby="about-cta-title"
         className="bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:px-8 sm:py-20"
@@ -535,9 +572,14 @@ export default function AboutPage() {
             Discover our collections
           </p>
 
+          {/* UI FIX 07 — BOTTOM HEADING */}
+
           <h2
             id="about-cta-title"
             className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
           >
             Every Product Starts with a Purpose.
           </h2>

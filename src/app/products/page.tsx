@@ -20,6 +20,16 @@ import {
    BARK ORNAMENT - PRODUCT CATALOGUE
    File: src/app/products/page.tsx
    Theme: Golden Coastal Luxury
+
+   UI FIX 05:
+   - Removed duplicate quotation CTA
+   - Preserved shared footer quotation CTA
+
+   UI FIX 08:
+   - Fixed dark-background hero heading color
+
+   Existing search, filtering, sorting,
+   category cards and product cards preserved.
    ========================================== */
 
 const categoryOptions = [
@@ -86,6 +96,7 @@ function PhotoPlaceholder({
 
 /* ==========================================
    CATEGORY CARD
+
    Two working actions:
    1. Visit dedicated category page
    2. Filter the current catalogue
@@ -179,9 +190,9 @@ function ProductCard({
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-xl border border-[#E4D7C4] bg-white text-center shadow-sm transition-shadow duration-300 hover:shadow-lg">
       <ApprovedCatalogueImage
-          product={product}
-          variant="card"
-        />
+        product={product}
+        variant="card"
+      />
 
       <div className="flex flex-1 flex-col items-center p-6">
         {product.isDemo && (
@@ -370,6 +381,7 @@ export default function ProductsPage() {
     <>
       {/* ====================================
           1. PAGE HERO
+          UI FIX 08 - HEADING VISIBILITY
           ==================================== */}
 
       <section className="relative overflow-hidden bg-[#30251F] px-5 py-20 text-center text-[#FAF7F0] sm:py-24">
@@ -383,7 +395,12 @@ export default function ProductsPage() {
             Bark Ornament Product Collections
           </p>
 
-          <h1 className="font-serif text-4xl leading-tight text-[#FAF7F0] sm:text-5xl lg:text-6xl">
+          <h1
+            className="font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl"
+            style={{
+              color: "#FAF7F0",
+            }}
+          >
             Explore Our Products
           </h1>
 
@@ -414,6 +431,7 @@ export default function ProductsPage() {
         <div className="mx-auto max-w-[1200px]">
           <div className="mb-8 text-center">
             <p className="eyebrow">Catalogue Search</p>
+
             <h2 className="font-serif text-3xl text-[#30251F]">
               Find a Product
             </h2>
@@ -679,32 +697,17 @@ export default function ProductsPage() {
       </section>
 
       {/* ====================================
-          5. QUOTATION CALL TO ACTION
+          UI FIX 05
+
+          Duplicate quotation section removed.
+
+          The shared Footer.tsx contains
+          the quotation call-to-action.
+
+          Product listings transition
+          directly to the existing footer.
           ==================================== */}
 
-      <section className="bg-[#30251F] px-5 py-20 text-center">
-        <div className="mx-auto max-w-3xl">
-          <p className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-[#E3B65D]">
-            Customized Hospitality Products
-          </p>
-
-          <h2 className="font-serif text-3xl text-[#FAF7F0] sm:text-4xl">
-            Looking for Something Specific?
-          </h2>
-
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[#E9DDC9]">
-            Explore our hospitality collections and
-            share your customized product requirements.
-          </p>
-
-          <Link
-            href="/request-quotation"
-            className="btn btn-primary mt-8"
-          >
-            Request a Quotation →
-          </Link>
-        </div>
-      </section>
     </>
   );
 }

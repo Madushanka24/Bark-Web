@@ -13,15 +13,19 @@ export const metadata: Metadata = {
  *
  * Insights Landing Page — Navigation Integration
  *
- * Updates ONLY:
+ * File:
  * src/app/insights/page.tsx
  *
- * Connects the landing page to the completed routes:
- *
+ * Completed routes:
  * /insights/news
  * /insights/knowledge
  * /insights/downloads
  * /insights/knowledge/understanding-gsm
+ *
+ * UI FIX 12:
+ * - Corrected hero heading color.
+ * - Corrected final CTA heading color.
+ * - Updated primary CTA buttons to brand orange.
  *
  * The GSM article remains an editorial website draft.
  * No publication dates or PDF files are invented.
@@ -159,6 +163,7 @@ function Arrow({
  * Decorative editorial artwork.
  * No photography, remote requests or nonexistent image assets.
  */
+
 function InsightsArtwork() {
   return (
     <div
@@ -219,7 +224,11 @@ function InsightsArtwork() {
 export default function InsightsPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
-      {/* 1. HERO */}
+
+      {/* =====================================
+          1. HERO
+          ===================================== */}
+
       <section
         aria-labelledby="insights-title"
         className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-[#FAF7F0] sm:px-8 sm:py-20 lg:py-24"
@@ -244,11 +253,17 @@ export default function InsightsPage() {
                 </Link>
               </li>
 
-              <li aria-hidden="true" className="text-[#E3B65D]">
+              <li
+                aria-hidden="true"
+                className="text-[#E3B65D]"
+              >
                 /
               </li>
 
-              <li aria-current="page" className="text-white">
+              <li
+                aria-current="page"
+                className="text-white"
+              >
                 Insights
               </li>
             </ol>
@@ -260,12 +275,23 @@ export default function InsightsPage() {
                 Bark Ornament · Insights
               </p>
 
+              {/* UI FIX 12 — HERO HEADING */}
+
               <h1
                 id="insights-title"
                 className="mt-6 max-w-3xl font-serif text-4xl leading-[1.12] sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
               >
                 Knowledge Behind
-                <span className="mt-2 block text-[#E3B65D]">
+
+                <span
+                  className="mt-2 block"
+                  style={{
+                    color: "#E3B65D",
+                  }}
+                >
                   Every Detail.
                 </span>
               </h1>
@@ -286,7 +312,7 @@ export default function InsightsPage() {
               <div className="mt-9 flex flex-wrap gap-4">
                 <a
                   href="#insight-sections"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-colors hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
                 >
                   Explore insights
                   <Arrow down />
@@ -307,7 +333,10 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* 2. THREE INSIGHTS DESTINATIONS */}
+      {/* =====================================
+          2. THREE INSIGHTS DESTINATIONS
+          ===================================== */}
+
       <section
         id="insight-sections"
         aria-labelledby="insight-sections-title"
@@ -371,7 +400,10 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* 3. NEWS — EDITORIAL TOPIC AREAS */}
+      {/* =====================================
+          3. NEWS — EDITORIAL TOPIC AREAS
+          ===================================== */}
+
       <section
         id="news"
         aria-labelledby="news-title"
@@ -435,7 +467,10 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* 4. KNOWLEDGE HUB */}
+      {/* =====================================
+          4. KNOWLEDGE HUB
+          ===================================== */}
+
       <section
         id="knowledge"
         aria-labelledby="knowledge-title"
@@ -460,6 +495,7 @@ export default function InsightsPage() {
           </p>
 
           {/* FEATURED KNOWLEDGE SERIES EDITION */}
+
           <article className="mt-9 grid overflow-hidden rounded-2xl border border-[#D9C8B0] bg-[#F3EBDF] lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
             <div className="relative flex min-h-64 items-center justify-center overflow-hidden bg-[#DED0BA] p-10">
               <div
@@ -562,7 +598,10 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* 5. DOWNLOADS WITHOUT NONEXISTENT FILE LINKS */}
+      {/* =====================================
+          5. DOWNLOADS
+          ===================================== */}
+
       <section
         id="downloads"
         aria-labelledby="downloads-title"
@@ -642,7 +681,10 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* 6. EXPLORE RELEVANT PRODUCT COLLECTIONS */}
+      {/* =====================================
+          6. RELATED PRODUCT COLLECTIONS
+          ===================================== */}
+
       <section
         aria-labelledby="related-products-title"
         className="px-5 py-16 sm:px-8 sm:py-20"
@@ -697,7 +739,10 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* 7. FINAL NAVIGATION — NO FORM OR EMAIL SUBMISSION */}
+      {/* =====================================
+          7. FINAL NAVIGATION
+          ===================================== */}
+
       <section
         aria-labelledby="insights-cta-title"
         className="bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:px-8 sm:py-20"
@@ -707,9 +752,14 @@ export default function InsightsPage() {
             Better material choices
           </p>
 
+          {/* UI FIX 12 — BOTTOM HEADING */}
+
           <h2
             id="insights-cta-title"
             className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
           >
             Knowledge That Supports Better Decisions.
           </h2>
@@ -723,7 +773,7 @@ export default function InsightsPage() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/products"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-colors hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
             >
               Browse Products
               <Arrow />

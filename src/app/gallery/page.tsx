@@ -24,18 +24,25 @@ type ShowcaseCollection = {
 };
 
 /**
- * FILE 77 — Gallery & Portfolio.
+ * BARK ORNAMENT — FILE 77
+ * Gallery & Portfolio
+ *
+ * UI FIX 11:
+ * - Fixed hero heading visibility.
+ * - Fixed bottom CTA heading visibility.
+ * - Updated primary buttons to brand orange.
  *
  * Editorial examples only.
  *
  * These are not client case studies, verified deliveries,
  * priced listings or live inventory records.
  *
- * Category slugs match File 75:
+ * Category slugs match:
  * src/app/categories/[slug]/page.tsx
  *
  * No network access, database access or submissions.
  */
+
 const collections = [
   {
     id: "printing",
@@ -167,8 +174,9 @@ const collections = [
 
 /**
  * The other four product categories remain accessible.
- * Together these links cover all ten File 75 slugs.
+ * Together these links cover all ten category slugs.
  */
+
 const additionalCategories = [
   {
     title: "Tags, Stickers & Cards",
@@ -214,8 +222,9 @@ function Arrow({
  * not an external image or a nonexistent asset.
  *
  * Actual approved images can replace this component
- * in a subsequent one-file development milestone.
+ * in a subsequent development milestone.
  */
+
 function ProductPreview({
   number,
   label,
@@ -299,7 +308,11 @@ function ProductPreview({
 export default function GalleryPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
-      {/* HERO */}
+
+      {/* =====================================
+          1. HERO SECTION
+          ===================================== */}
+
       <section
         className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-[#FAF7F0] sm:px-8 sm:py-20 lg:py-24"
         aria-labelledby="gallery-title"
@@ -346,13 +359,23 @@ export default function GalleryPage() {
                 Bark Ornament · Product Showcase
               </p>
 
+              {/* UI FIX 11 — HERO TEXT VISIBILITY */}
+
               <h1
                 id="gallery-title"
                 className="mt-6 max-w-3xl font-serif text-4xl leading-[1.12] sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
               >
                 Beautifully Considered.
 
-                <span className="mt-2 block text-[#E3B65D]">
+                <span
+                  className="mt-2 block"
+                  style={{
+                    color: "#E3B65D",
+                  }}
+                >
                   Made for Hospitality.
                 </span>
               </h1>
@@ -375,7 +398,7 @@ export default function GalleryPage() {
               <div className="mt-9 flex flex-wrap gap-4">
                 <a
                   href="#gallery-collections"
-                  className="inline-flex min-h-12 items-center gap-3 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+                  className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
                 >
                   Explore the showcase
                   <Arrow direction="down" />
@@ -392,6 +415,7 @@ export default function GalleryPage() {
             </div>
 
             {/* Abstract editorial artwork; no external images */}
+
             <div
               aria-hidden="true"
               className="relative mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-[#C59A45]/45 bg-[#473629] p-8 shadow-2xl"
@@ -418,7 +442,10 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* INTRODUCTION AND COLLECTION NAVIGATION */}
+      {/* =====================================
+          2. INTRODUCTION AND COLLECTION NAVIGATION
+          ===================================== */}
+
       <section
         id="gallery-collections"
         className="scroll-mt-24 px-5 pb-9 pt-16 sm:px-8 sm:pt-20"
@@ -459,7 +486,10 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* CATEGORY-BASED GALLERY SECTIONS */}
+      {/* =====================================
+          3. CATEGORY-BASED GALLERY SECTIONS
+          ===================================== */}
+
       {collections.map((collection, sectionIndex) => (
         <section
           key={collection.id}
@@ -537,7 +567,10 @@ export default function GalleryPage() {
         </section>
       ))}
 
-      {/* ADDITIONAL PRODUCT FAMILIES */}
+      {/* =====================================
+          4. ADDITIONAL PRODUCT FAMILIES
+          ===================================== */}
+
       <section
         className="border-t border-[#E7D9C5] bg-[#FAF7F0] px-5 py-16 sm:px-8 sm:py-20"
         aria-labelledby="more-families-title"
@@ -588,7 +621,10 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* CATALOGUE AND QUOTATION NAVIGATION */}
+      {/* =====================================
+          5. CATALOGUE AND QUOTATION NAVIGATION
+          ===================================== */}
+
       <section
         className="bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:px-8 sm:py-20"
         aria-labelledby="gallery-cta-title"
@@ -598,9 +634,14 @@ export default function GalleryPage() {
             Your next hospitality project
           </p>
 
+          {/* UI FIX 11 — BOTTOM HEADING VISIBILITY */}
+
           <h2
             id="gallery-cta-title"
             className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
           >
             Let&apos;s Explore the Possibilities.
           </h2>
@@ -614,7 +655,7 @@ export default function GalleryPage() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/products"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
             >
               Browse Products
               <Arrow />

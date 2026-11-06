@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import {
   productCategories,
@@ -14,6 +15,15 @@ import {
    BARK ORNAMENT - CATEGORY DETAIL PAGE
    File: src/app/products/category/[slug]/page.tsx
    Design: Golden Coastal Luxury
+
+   FIX 16:
+   Next.js 16 Instant Navigation compatibility.
+
+   URL-dependent content now renders inside
+   a Suspense boundary.
+
+   Original category data, product listings,
+   links, SEO and styling are preserved.
    ========================================== */
 
 type CategoryPageProps = {
@@ -101,11 +111,13 @@ function ProductPlaceholder({
           height="18"
           rx="2"
         />
+
         <circle
           cx="8.5"
           cy="8.5"
           r="1.5"
         />
+
         <path d="m21 15-5-5L5 21" />
       </svg>
 
@@ -161,10 +173,14 @@ function CategoryProductCard({
 }
 
 /* ==========================================
-   CATEGORY PAGE
+   CATEGORY DETAIL CONTENT
+
+   FIX 16:
+   This async component reads route params.
+   It is rendered inside Suspense below.
    ========================================== */
 
-export default async function CategoryPage({
+async function CategoryDetailContent({
   params,
 }: CategoryPageProps) {
   const { slug } = await params;
@@ -209,7 +225,12 @@ export default async function CategoryPage({
             {String(categoryNumber).padStart(2, "0")}
           </p>
 
-          <h1 className="font-serif text-4xl leading-tight text-[#FAF7F0] sm:text-5xl lg:text-6xl">
+          <h1
+            className="font-serif text-4xl leading-tight text-[#FAF7F0] sm:text-5xl lg:text-6xl"
+            style={{
+              color: "#FAF7F0",
+            }}
+          >
             {category.name}
           </h1>
 
@@ -218,6 +239,7 @@ export default async function CategoryPage({
           </p>
 
           {/* BREADCRUMB NAVIGATION */}
+
           <nav
             aria-label="Breadcrumb"
             className="mt-9"
@@ -245,7 +267,10 @@ export default async function CategoryPage({
 
               <li aria-hidden="true">/</li>
 
-              <li aria-current="page" className="text-[#E3B65D]">
+              <li
+                aria-current="page"
+                className="text-[#E3B65D]"
+              >
                 {category.name}
               </li>
             </ol>
@@ -415,7 +440,12 @@ export default async function CategoryPage({
             Customized Hospitality Products
           </p>
 
-          <h2 className="font-serif text-3xl text-[#FAF7F0] sm:text-4xl">
+          <h2
+            className="font-serif text-3xl text-[#FAF7F0] sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
+          >
             Need a Customized Product?
           </h2>
 
@@ -434,5 +464,59 @@ export default async function CategoryPage({
         </div>
       </section>
     </>
+  );
+}
+
+/* ==========================================
+   NEXT.JS 16 INSTANT NAVIGATION
+
+   FIX 16:
+   The default page component no longer
+   awaits route parameters directly.
+
+   CategoryDetailContent handles URL data
+   inside a Suspense boundary.
+   ========================================== */
+
+export default function CategoryPage({
+  params,
+}: CategoryPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#FAF7F0] text-[#30251F]">
+          <section className="relative overflow-hidden bg-[#30251F] px-5 py-20 text-center text-[#FAF7F0] sm:py-24">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full border border-[#C59A45]/20"
+            />
+
+            <div className="relative mx-auto max-w-4xl">
+              <p className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-[#E3B65D]">
+                Bark Ornament Collections
+              </p>
+
+              <h1
+                className="font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
+              >
+                Explore Our Product Collections
+              </h1>
+
+              <p
+                role="status"
+                className="mx-auto mt-7 max-w-2xl text-base leading-8 text-[#E9DDC9]"
+              >
+                Loading collection details…
+              </p>
+            </div>
+          </section>
+        </main>
+      }
+    >
+      <CategoryDetailContent params={params} />
+    </Suspense>
   );
 }

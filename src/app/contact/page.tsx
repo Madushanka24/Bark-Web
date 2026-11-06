@@ -12,8 +12,12 @@ export const metadata: Metadata = {
  * BARK ORNAMENT — FILE 82
  * Contact Us page
  *
- * One new file:
- * src/app/contact/page.tsx
+ * File: src/app/contact/page.tsx
+ *
+ * UI FIX 13:
+ * - Corrected hero heading visibility.
+ * - Corrected bottom CTA heading visibility.
+ * - Updated primary buttons to brand orange.
  *
  * The enquiry email below was supplied in earlier
  * Bark Ornament marketing material. Confirm that it
@@ -114,6 +118,7 @@ function Arrow() {
  * No geographical map, business address,
  * client photo or external image dependency.
  */
+
 function ContactArtwork() {
   return (
     <div
@@ -145,12 +150,14 @@ function ContactArtwork() {
             stroke="currentColor"
             strokeWidth="1.5"
           />
+
           <path
             d="M16 29L48 53L80 29"
             stroke="currentColor"
             strokeWidth="1.5"
             strokeLinejoin="round"
           />
+
           <path
             d="M17 69L37 48M79 69L59 48"
             stroke="currentColor"
@@ -174,7 +181,10 @@ function ContactArtwork() {
 export default function ContactPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
-      {/* 1. HERO */}
+      {/* =====================================
+          1. HERO
+          ===================================== */}
+
       <section
         aria-labelledby="contact-title"
         className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-[#FAF7F0] sm:px-8 sm:py-20 lg:py-24"
@@ -221,13 +231,23 @@ export default function ContactPage() {
                 Bark Ornament · Get in Touch
               </p>
 
+              {/* UI FIX 13 — HERO HEADING VISIBILITY */}
+
               <h1
                 id="contact-title"
                 className="mt-6 max-w-3xl font-serif text-4xl leading-[1.12] sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
               >
                 Let&apos;s Create Something
 
-                <span className="mt-2 block text-[#E3B65D]">
+                <span
+                  className="mt-2 block"
+                  style={{
+                    color: "#E3B65D",
+                  }}
+                >
                   Considered.
                 </span>
               </h1>
@@ -241,7 +261,7 @@ export default function ContactPage() {
               <div className="mt-9 flex flex-wrap gap-4">
                 <a
                   href="#contact-details"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-colors hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
                 >
                   View contact details
 
@@ -263,7 +283,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 2. DIRECT CONTACT DETAILS */}
+      {/* =====================================
+          2. DIRECT CONTACT DETAILS
+          ===================================== */}
+
       <section
         id="contact-details"
         aria-labelledby="contact-details-title"
@@ -308,6 +331,7 @@ export default function ContactPage() {
                     stroke="currentColor"
                     strokeWidth="1.6"
                   />
+
                   <path
                     d="M4 7L12 13L20 7"
                     stroke="currentColor"
@@ -364,6 +388,7 @@ export default function ContactPage() {
                     strokeWidth="1.6"
                     strokeLinejoin="round"
                   />
+
                   <circle
                     cx="12"
                     cy="10"
@@ -406,7 +431,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 3. PREPARE AN ENQUIRY */}
+      {/* =====================================
+          3. PREPARE AN ENQUIRY
+          ===================================== */}
+
       <section
         aria-labelledby="enquiry-guide-title"
         className="border-y border-[#E0D2BF] bg-[#F3EBDF] px-5 py-16 sm:px-8 sm:py-20"
@@ -485,7 +513,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 4. MARKET-SPECIFIC INFORMATION */}
+      {/* =====================================
+          4. MARKET-SPECIFIC INFORMATION
+          ===================================== */}
+
       <section
         aria-labelledby="contact-markets-title"
         className="px-5 py-16 sm:px-8 sm:py-20"
@@ -530,7 +561,10 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 5. RELATED EXISTING PAGES */}
+      {/* =====================================
+          5. RELATED EXISTING PAGES
+          ===================================== */}
+
       <section
         aria-labelledby="explore-title"
         className="border-t border-[#E0D2BF] bg-[#F1E8DB] px-5 py-16 sm:px-8 sm:py-20"
@@ -574,7 +608,11 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 6. QUOTATION NAVIGATION — NO FORM SUBMISSION */}
+      {/* =====================================
+          6. QUOTATION NAVIGATION
+          NO FORM SUBMISSION
+          ===================================== */}
+
       <section
         aria-labelledby="contact-cta-title"
         className="bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:px-8 sm:py-20"
@@ -584,9 +622,14 @@ export default function ContactPage() {
             Hospitality product solutions
           </p>
 
+          {/* UI FIX 13 — BOTTOM HEADING VISIBILITY */}
+
           <h2
             id="contact-cta-title"
             className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
           >
             Ready to Plan Your Next Requirement?
           </h2>
@@ -601,7 +644,7 @@ export default function ContactPage() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/products"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-colors hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
             >
               Browse Products
               <Arrow />

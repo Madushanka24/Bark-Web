@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import AddToQuote from "@/components/AddToQuote";
 
@@ -27,6 +28,12 @@ import {
  *
  * PRODUCT DETAIL PAGE
  * Theme: Golden Coastal Luxury
+ *
+ * FIX 17 — NEXT.JS 16 INSTANT NAVIGATION
+ * - Move URL-dependent page content into an async component.
+ * - Render async content inside Suspense.
+ * - Preserve generateStaticParams and generateMetadata.
+ * - Keep existing product and quotation behavior unchanged.
  *
  * APPROVED PHOTOGRAPHY
  * - Main product image connected
@@ -93,7 +100,9 @@ export async function generateMetadata({
   }
 
   return {
-    alternates: { canonical: `/products/${product.slug}` },
+    alternates: {
+      canonical: `/products/${product.slug}`,
+    },
     title: product.name,
     description: product.shortDescription,
     robots: {
@@ -112,8 +121,6 @@ export async function generateMetadata({
 /**
  * This wrapper retains the existing
  * ProductPhotoPlaceholder interface.
- *
- * File 107 adds the optional photo property.
  *
  * When photo is null:
  * - Display the shared luxury placeholder.
@@ -195,11 +202,9 @@ function SpecificationList({
    ========================================== */
 
 /**
- * File 107:
- *
- * The related product card now looks up
- * the approved primary photograph using
- * that related product's own slug.
+ * The related product card looks up the
+ * approved primary photograph using
+ * the related product's own slug.
  *
  * This prevents a main product's image
  * from appearing on the wrong product.
@@ -250,10 +255,17 @@ function RelatedProductCard({
 }
 
 /* ==========================================
-   6. MAIN DYNAMIC PRODUCT PAGE
+   6. PRODUCT DETAIL CONTENT
+
+   FIX 17:
+   URL-dependent content is now inside
+   this asynchronous child component.
+
+   This component is rendered within
+   Suspense by ProductDetailPage below.
    ========================================== */
 
-export default async function ProductDetailPage({
+async function ProductDetailContent({
   params,
 }: ProductPageProps) {
   const { slug } = await params;
@@ -264,6 +276,7 @@ export default async function ProductDetailPage({
    *
    * These are not confirmed inventory.
    */
+
   const product = getProductBySlug(
     slug,
     true
@@ -289,6 +302,7 @@ export default async function ProductDetailPage({
    * When no same-category products exist,
    * suggest other preview records.
    */
+
   const relatedProducts =
     relatedInCategory.length > 0
       ? relatedInCategory
@@ -305,13 +319,10 @@ export default async function ProductDetailPage({
     product.finishes.length > 0;
 
   /*
-   * File 107:
    * Retrieve the approved gallery using
    * this product's actual catalogue slug.
-   *
-   * The initial registry is empty, so
-   * all four slots currently return null.
    */
+
   const gallery = getApprovedProductImages(
     product.slug
   );
@@ -340,7 +351,12 @@ export default async function ProductDetailPage({
             Bark Ornament Product Collection
           </p>
 
-          <h1 className="font-serif text-4xl leading-tight text-[#FAF7F0] sm:text-5xl">
+          <h1
+            className="font-serif text-4xl leading-tight text-[#FAF7F0] sm:text-5xl"
+            style={{
+              color: "#FAF7F0",
+            }}
+          >
             {product.name}
           </h1>
 
@@ -636,5 +652,68 @@ export default async function ProductDetailPage({
         </section>
       )}
     </>
+  );
+}
+
+/* ==========================================
+   7. SUSPENSE LOADING SHELL
+
+   This fallback can render without
+   reading the product's URL parameters.
+   ========================================== */
+
+function ProductDetailFallback() {
+  return (
+    <main className="min-h-screen bg-[#FAF7F0] text-[#30251F]">
+      <section className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:py-20">
+        <div
+          aria-hidden="true"
+          className="absolute -right-24 -top-24 h-72 w-72 rounded-full border border-[#C59A45]/20"
+        />
+
+        <div className="relative mx-auto max-w-4xl">
+          <p className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-[#E3B65D]">
+            Bark Ornament Product Collection
+          </p>
+
+          <h1
+            className="font-serif text-4xl leading-tight text-[#FAF7F0] sm:text-5xl"
+            style={{
+              color: "#FAF7F0",
+            }}
+          >
+            Discover Our Products
+          </h1>
+
+          <p
+            role="status"
+            className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[#E9DDC9]"
+          >
+            Loading product details…
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+/* ==========================================
+   8. MAIN DYNAMIC PRODUCT PAGE
+
+   FIX 17:
+   The default exported page does not
+   await URL parameters.
+
+   The async content is rendered inside
+   Suspense to support Instant Navigation.
+   ========================================== */
+
+export default function ProductDetailPage({
+  params,
+}: ProductPageProps) {
+  return (
+    <Suspense fallback={<ProductDetailFallback />}>
+      <ProductDetailContent params={params} />
+    </Suspense>
   );
 }

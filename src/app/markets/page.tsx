@@ -9,20 +9,18 @@ export const metadata: Metadata = {
 };
 
 /**
- * BARK ORNAMENT — FILE 80
- * Markets landing page navigation integration.
+ * BARK ORNAMENT — MARKETS LANDING PAGE
  *
- * This file updates only:
- * src/app/markets/page.tsx
+ * Route: /markets
  *
- * Existing on-page anchors remain functional.
- * The three main markets now link to:
- * /markets/maldives
- * /markets/seychelles
- * /markets/sri-lanka
+ * UI FIX 10:
+ * - Corrected hero heading visibility
+ * - Corrected final CTA heading visibility
+ * - Standardized primary buttons to brand orange
+ * - Preserved all market content and navigation
  *
  * No database queries, quotation submissions,
- * real email delivery, or new dependencies.
+ * automated emails or new dependencies.
  */
 
 const primaryMarkets = [
@@ -118,6 +116,16 @@ const additionalMarkets = [
   },
 ] as const;
 
+/* ==========================================
+   REUSABLE BRAND BUTTON STYLES
+   ========================================== */
+
+const primaryButton =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-[background-color,transform] duration-200 hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transform-none motion-reduce:transition-none";
+
+const outlineButton =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[#C59A45] px-7 py-3 text-sm font-bold text-[#FAF7F0] transition-colors duration-200 hover:bg-[#49382E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none";
+
 function Arrow({
   down = false,
 }: {
@@ -130,10 +138,15 @@ function Arrow({
   );
 }
 
+/* ==========================================
+   DECORATIVE MARKET ARTWORK
+   ========================================== */
+
 /**
  * Retained decorative artwork.
  * No external images or geographic route claims.
  */
+
 function MarketMotif() {
   return (
     <div
@@ -155,6 +168,7 @@ function MarketMotif() {
           stroke="currentColor"
           strokeOpacity="0.35"
         />
+
         <circle
           cx="120"
           cy="122"
@@ -162,6 +176,7 @@ function MarketMotif() {
           stroke="currentColor"
           strokeOpacity="0.45"
         />
+
         <circle
           cx="120"
           cy="122"
@@ -169,35 +184,41 @@ function MarketMotif() {
           stroke="currentColor"
           strokeOpacity="0.65"
         />
+
         <path
           d="M20 122H220M120 22V222"
           stroke="currentColor"
           strokeOpacity="0.3"
         />
+
         <path
           d="M46 181C79 150 115 160 145 121S194 89 212 63"
           stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
         />
+
         <circle
           cx="70"
           cy="165"
           r="6"
           fill="currentColor"
         />
+
         <circle
           cx="145"
           cy="121"
           r="6"
           fill="currentColor"
         />
+
         <circle
           cx="194"
           cy="83"
           r="6"
           fill="currentColor"
         />
+
         <path
           d="M66 236H174"
           stroke="currentColor"
@@ -212,10 +233,18 @@ function MarketMotif() {
   );
 }
 
+/* ==========================================
+   MARKETS PAGE
+   ========================================== */
+
 export default function MarketsPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
-      {/* EDITORIAL HERO */}
+
+      {/* =====================================
+          1. EDITORIAL HERO
+          ===================================== */}
+
       <section
         aria-labelledby="markets-title"
         className="relative overflow-hidden bg-[#30251F] px-5 py-16 text-[#FAF7F0] sm:px-8 sm:py-20 lg:py-24"
@@ -226,6 +255,9 @@ export default function MarketsPage() {
         />
 
         <div className="relative mx-auto max-w-7xl">
+
+          {/* BREADCRUMB */}
+
           <nav
             aria-label="Breadcrumb"
             className="mb-12 text-sm text-[#E9DDC9]"
@@ -262,13 +294,23 @@ export default function MarketsPage() {
                 Bark Ornament · International Hospitality
               </p>
 
+              {/* UI FIX 10 - HERO HEADING */}
+
               <h1
                 id="markets-title"
                 className="mt-6 max-w-3xl font-serif text-4xl leading-[1.12] sm:text-5xl lg:text-6xl"
+                style={{
+                  color: "#FAF7F0",
+                }}
               >
                 Rooted in Sri Lanka.
 
-                <span className="mt-2 block text-[#E3B65D]">
+                <span
+                  className="mt-2 block"
+                  style={{
+                    color: "#E3B65D",
+                  }}
+                >
                   Connected to Island Hospitality.
                 </span>
               </h1>
@@ -283,7 +325,7 @@ export default function MarketsPage() {
               <div className="mt-9 flex flex-wrap gap-4">
                 <a
                   href="#primary-markets"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+                  className={primaryButton}
                 >
                   Explore our markets
                   <Arrow down />
@@ -291,7 +333,7 @@ export default function MarketsPage() {
 
                 <Link
                   href="/products"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[#C59A45] px-7 py-3 text-sm font-bold text-white transition-colors hover:bg-[#49382E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+                  className={outlineButton}
                 >
                   Browse products
                   <Arrow />
@@ -304,7 +346,10 @@ export default function MarketsPage() {
         </div>
       </section>
 
-      {/* EXISTING ON-PAGE MARKET NAVIGATION */}
+      {/* =====================================
+          2. CORE MARKET NAVIGATION
+          ===================================== */}
+
       <section
         id="primary-markets"
         aria-labelledby="primary-markets-title"
@@ -355,7 +400,10 @@ export default function MarketsPage() {
         </div>
       </section>
 
-      {/* MAIN MARKET PROFILES WITH FILE 80 DETAIL LINKS */}
+      {/* =====================================
+          3. MAIN MARKET PROFILES
+          ===================================== */}
+
       {primaryMarkets.map((market, index) => (
         <section
           key={market.id}
@@ -368,6 +416,9 @@ export default function MarketsPage() {
           }`}
         >
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+
+            {/* MARKET INFORMATION */}
+
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#A94C19]">
                 Market {market.number} · {market.descriptor}
@@ -392,26 +443,19 @@ export default function MarketsPage() {
                 {market.note}
               </p>
 
-              {/*
-                FILE 80 NEW NAVIGATION.
-
-                This opens the existing File 79
-                market-specific detail page.
-
-                The on-page country navigation above
-                remains unchanged.
-              */}
               <div className="mt-8">
                 <Link
                   href={`/markets/${market.id}`}
                   aria-label={`Explore ${market.name} market details`}
-                  className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#B95016] px-7 py-3 text-sm font-bold text-white transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#913E11] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016] motion-reduce:transform-none motion-reduce:transition-none"
+                  className={primaryButton}
                 >
                   Explore {market.name}
                   <Arrow />
                 </Link>
               </div>
             </div>
+
+            {/* RELEVANT PRODUCT COLLECTIONS */}
 
             <div className="rounded-2xl border border-[#D9C8B0] bg-white p-6 shadow-sm sm:p-8">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#A94C19]">
@@ -448,9 +492,11 @@ export default function MarketsPage() {
                 ))}
               </ul>
 
+              {/* UI FIX 10 - ORANGE CATALOGUE BUTTON */}
+
               <Link
                 href="/products"
-                className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#30251F] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#A94C19] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016] motion-reduce:transition-none"
+                className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#B95016] px-6 py-3 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#963E10] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E3B65D] motion-reduce:transition-none"
               >
                 Browse full catalogue
                 <Arrow />
@@ -460,7 +506,10 @@ export default function MarketsPage() {
         </section>
       ))}
 
-      {/* ADDITIONAL INTERNATIONAL MARKETS */}
+      {/* =====================================
+          4. ADDITIONAL INTERNATIONAL MARKETS
+          ===================================== */}
+
       <section
         id="additional-markets"
         aria-labelledby="additional-markets-title"
@@ -524,7 +573,10 @@ export default function MarketsPage() {
         </div>
       </section>
 
-      {/* EXPORT PROJECT WORKFLOW */}
+      {/* =====================================
+          5. EXPORT PROJECT WORKFLOW
+          ===================================== */}
+
       <section
         aria-labelledby="working-together-title"
         className="border-t border-[#E0D2BF] bg-[#F1E8DB] px-5 py-16 sm:px-8 sm:py-20"
@@ -586,7 +638,10 @@ export default function MarketsPage() {
         </div>
       </section>
 
-      {/* SAFE QUOTATION NAVIGATION */}
+      {/* =====================================
+          6. SAFE QUOTATION NAVIGATION
+          ===================================== */}
+
       <section
         aria-labelledby="market-cta-title"
         className="bg-[#30251F] px-5 py-16 text-center text-[#FAF7F0] sm:px-8 sm:py-20"
@@ -596,9 +651,14 @@ export default function MarketsPage() {
             Thoughtful products, across markets
           </p>
 
+          {/* UI FIX 10 - BOTTOM HEADING VISIBILITY */}
+
           <h2
             id="market-cta-title"
             className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+            style={{
+              color: "#FAF7F0",
+            }}
           >
             Planning a Hospitality Requirement?
           </h2>
@@ -613,7 +673,7 @@ export default function MarketsPage() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/products"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#E3B65D] px-7 py-3 text-sm font-bold text-[#30251F] transition-colors hover:bg-[#F4CE83] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+              className={primaryButton}
             >
               Explore products
               <Arrow />
@@ -621,7 +681,7 @@ export default function MarketsPage() {
 
             <Link
               href="/request-quotation"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-[#C59A45] px-7 py-3 text-sm font-bold text-white transition-colors hover:bg-[#49382E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none"
+              className={outlineButton}
             >
               View quotation page
               <Arrow />
