@@ -1,6 +1,12 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+
+import {
+  getSanityPdfPublications,
+  type SanityPdfPublication,
+} from "@/lib/sanity-pdf-publications";
 
 export const metadata: Metadata = {
   title: "Downloads & Resources | Bark Ornament Insights",
@@ -12,18 +18,16 @@ export const metadata: Metadata = {
  * BARK ORNAMENT — FILE 86
  * Downloads & Resources Library
  *
- * One new file:
- * src/app/insights/downloads/page.tsx
+ * Existing resource layout preserved.
  *
- * IMPORTANT:
- * - No approved public PDF paths have been supplied.
- * - No download links are enabled initially.
- * - No publication dates or file sizes are invented.
- * - Knowledge Series Edition 01 exists as editorial
- *   content, but is not yet connected as a website PDF.
+ * FILE 149 — STEP E2:
+ * - Approved PDF publications loaded from the Sanity reader.
+ * - Unavailable content retains the existing empty state.
+ * - PDF links, dates and file sizes come from verified CMS data.
+ * - Knowledge Series Edition 01 remains editorial content;
+ *   a verified PDF appears only if published and approved.
  *
- * No database access, API requests, forms,
- * server actions or automated email delivery.
+ * No database writes, forms, server actions or email delivery.
  */
 
 type ResourceCategoryId =
@@ -42,15 +46,8 @@ type ResourceCategory = {
 };
 
 /**
- * For a future milestone only.
- *
- * An item should be added here only after:
- * 1. The PDF has been approved.
- * 2. Its actual website path is verified.
- * 3. Its publication date is confirmed.
- * 4. Its file size is checked.
- *
- * The array remains EMPTY in File 86.
+ * Existing Downloads page card data shape.
+ * Values now come from verified CMS publications.
  */
 type ApprovedPdf = {
   id: string;
@@ -62,8 +59,6 @@ type ApprovedPdf = {
   dateLabel: string;
   fileSizeLabel: string;
 };
-
-const approvedDownloads: readonly ApprovedPdf[] = [];
 
 const resourceCategories = [
   {
@@ -140,6 +135,46 @@ const publicationChecks = [
       "Provide a meaningful document title and description, a readable PDF and a clearly labelled file link.",
   },
 ] as const;
+
+/* ==========================================
+   FILE 149 — STEP E2
+
+   SANITY PDF PUBLICATIONS INTEGRATION
+   ========================================== */
+
+/**
+ * Convert verified CMS publications into
+ * the existing Downloads page card format.
+ *
+ * This does not change the card design,
+ * publication categories or file metadata.
+ */
+function toApprovedPdf(
+  publication: SanityPdfPublication
+): ApprovedPdf {
+  const dateLabel = new Intl.DateTimeFormat(
+    "en-GB",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    }
+  ).format(
+    new Date(`${publication.publishedAt}T00:00:00Z`)
+  );
+
+  return {
+    id: publication.id,
+    title: publication.title,
+    description: publication.description,
+    category: publication.category,
+    href: publication.href,
+    publishedAt: publication.publishedAt,
+    dateLabel,
+    fileSizeLabel: publication.fileSizeLabel,
+  };
+}
 
 function Arrow({ down = false }: { down?: boolean }) {
   return (
@@ -225,6 +260,189 @@ function LibraryArtwork() {
   );
 }
 
+/**
+ * Preserve the original Available Downloads section.
+ * Only the dynamic data source and PDF link behavior change.
+ */
+function AvailableDownloadsSection({
+  downloads,
+}: {
+  downloads: readonly ApprovedPdf[];
+}) {
+  return (
+    <section
+      id="available-downloads"
+      aria-labelledby="available-downloads-title"
+      className="scroll-mt-20 bg-[#FAF7F0] px-5 py-16 sm:px-8 sm:py-20"
+    >
+      <div className="mx-auto max-w-7xl">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#A94C19]">
+          Verified publications
+        </p>
+
+        <h2
+          id="available-downloads-title"
+          className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+        >
+          Available Downloads
+        </h2>
+
+        <p className="mt-5 max-w-3xl text-base leading-8 text-[#74675E]">
+          Only real, approved files will appear in this
+          collection. Each published document will have
+          a verified file location and descriptive details.
+        </p>
+
+        {downloads.length === 0 ? (
+          <div className="mt-9 rounded-2xl border border-[#D9C8B0] bg-[#F3EBDF] p-7 sm:p-10">
+            <div
+              aria-hidden="true"
+              className="flex h-12 w-12 items-center justify-center rounded-full border border-[#C59A45]/50 bg-[#FAF7F0] text-[#A94C19]"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+              >
+                <path
+                  d="M7 3H14L19 8V21H7V3Z"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                />
+
+                <path
+                  d="M14 3V8H19M10 13H16M10 17H16"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+
+            <h3 className="mt-5 font-serif text-2xl leading-snug text-[#30251F] sm:text-3xl">
+              Our digital download collection is being prepared.
+            </h3>
+
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#66584F]">
+              There are currently no approved PDF publications
+              available to view. New resources will appear here
+              once their documents and details are verified
+              and published.
+            </p>
+
+            <Link
+              href="/insights/knowledge"
+              className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-bold text-[#A94C19] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016]"
+            >
+              Explore educational topics
+              <Arrow />
+            </Link>
+          </div>
+        ) : (
+          <ul className="mt-9 grid gap-5 md:grid-cols-2">
+            {downloads.map((file) => (
+              <li
+                key={file.id}
+                className="flex h-full flex-col rounded-xl border border-[#D9C8B0] bg-white p-7 shadow-sm"
+              >
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#A94C19]">
+                  {resourceCategories.find(
+                    (category) => category.id === file.category
+                  )?.title}
+                </p>
+
+                <h3 className="mt-4 font-serif text-2xl leading-snug text-[#30251F]">
+                  {file.title}
+                </h3>
+
+                <p className="mt-4 flex-1 text-sm leading-7 text-[#74675E]">
+                  {file.description}
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#74675E]">
+                  <time dateTime={file.publishedAt}>
+                    {file.dateLabel}
+                  </time>
+
+                  <span>
+                    PDF · {file.fileSizeLabel}
+                  </span>
+                </div>
+
+                <a
+                  href={file.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  type="application/pdf"
+                  className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-md bg-[#B95016] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#913E11] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016] motion-reduce:transition-none"
+                >
+                  View PDF
+                  <Arrow />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Read approved PDF publications on the server.
+ * The reader is responsible for validation and
+ * returning an empty array when CMS data is unavailable.
+ */
+async function SanityAvailableDownloadsSection() {
+  const publications =
+    await getSanityPdfPublications();
+
+  const downloads: readonly ApprovedPdf[] =
+    publications.map(toApprovedPdf);
+
+  return (
+    <AvailableDownloadsSection
+      downloads={downloads}
+    />
+  );
+}
+
+/**
+ * Neutral loading state until the CMS result is ready.
+ */
+function DownloadsLoadingSection() {
+  return (
+    <section
+      id="available-downloads"
+      aria-labelledby="available-downloads-title"
+      className="scroll-mt-20 bg-[#FAF7F0] px-5 py-16 sm:px-8 sm:py-20"
+    >
+      <div className="mx-auto max-w-7xl">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#A94C19]">
+          Verified publications
+        </p>
+
+        <h2
+          id="available-downloads-title"
+          className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
+        >
+          Available Downloads
+        </h2>
+
+        <div
+          role="status"
+          className="mt-9 rounded-2xl border border-[#D9C8B0] bg-[#F3EBDF] p-7 text-sm text-[#66584F] sm:p-10"
+        >
+          Checking approved publications…
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function DownloadsPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
@@ -300,9 +518,8 @@ export default function DownloadsPage() {
               </p>
 
               <p className="mt-4 max-w-2xl text-sm leading-7 text-[#D8C8B5]">
-                Our digital collection is being prepared.
-                Approved PDF publications will become available
-                here after their files and details are verified.
+                Browse our resource collections and access
+                verified PDF publications as they become available.
               </p>
 
               <div className="mt-9 flex flex-wrap gap-4">
@@ -349,9 +566,8 @@ export default function DownloadsPage() {
 
           <p className="mt-5 max-w-3xl text-base leading-8 text-[#74675E]">
             The library is organised into four publication
-            families. Their descriptions explain the intended
-            content, rather than implying that files are
-            already available to download.
+            families. Browse the collections and check Available
+            Downloads for approved files.
           </p>
 
           <nav
@@ -430,10 +646,9 @@ export default function DownloadsPage() {
               </p>
 
               <p className="mt-5 border-l-2 border-[#C59A45] pl-4 text-sm leading-7 text-[#74675E]">
-                This edition exists as Bark Ornament
-                educational material, but its approved PDF
-                has not yet been connected to the website.
-                No download link is currently available.
+                Explore our existing GSM educational material.
+                Any approved PDF edition will be listed in Available
+                Downloads when published.
               </p>
 
               <Link
@@ -479,7 +694,7 @@ export default function DownloadsPage() {
               </p>
 
               <p className="mt-6 text-sm font-semibold text-[#8B6741]">
-                Resource collection in preparation
+                Explore approved publications below
               </p>
             </div>
 
@@ -489,8 +704,9 @@ export default function DownloadsPage() {
               </h3>
 
               <p className="mt-3 text-sm leading-7 text-[#74675E]">
-                The following are proposed content types,
-                not available PDF files.
+                These are examples of resource types planned for
+                this collection. Available files are listed
+                separately below.
               </p>
 
               <ul className="mt-6 divide-y divide-[#E8DCCB]">
@@ -515,125 +731,10 @@ export default function DownloadsPage() {
         </section>
       ))}
 
-      {/* 5. AVAILABLE FILES — ACCURATE EMPTY STATE */}
-      <section
-        id="available-downloads"
-        aria-labelledby="available-downloads-title"
-        className="scroll-mt-20 bg-[#FAF7F0] px-5 py-16 sm:px-8 sm:py-20"
-      >
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#A94C19]">
-            Verified publications
-          </p>
-
-          <h2
-            id="available-downloads-title"
-            className="mt-4 font-serif text-3xl leading-tight sm:text-4xl"
-          >
-            Available Downloads
-          </h2>
-
-          <p className="mt-5 max-w-3xl text-base leading-8 text-[#74675E]">
-            Only real, approved files will appear in this
-            collection. Each published document will have
-            a verified file location and descriptive details.
-          </p>
-
-          {approvedDownloads.length === 0 ? (
-            <div className="mt-9 rounded-2xl border border-[#D9C8B0] bg-[#F3EBDF] p-7 sm:p-10">
-              <div
-                aria-hidden="true"
-                className="flex h-12 w-12 items-center justify-center rounded-full border border-[#C59A45]/50 bg-[#FAF7F0] text-[#A94C19]"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  fill="none"
-                >
-                  <path
-                    d="M7 3H14L19 8V21H7V3Z"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-
-                  <path
-                    d="M14 3V8H19M10 13H16M10 17H16"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-
-              <h3 className="mt-5 font-serif text-2xl leading-snug text-[#30251F] sm:text-3xl">
-                Our digital download collection is being prepared.
-              </h3>
-
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-[#66584F]">
-                There are no approved PDF files available
-                for direct website download at present.
-                Resources will be listed here after the
-                corresponding documents are verified and
-                connected to the website.
-              </p>
-
-              <Link
-                href="/insights/knowledge"
-                className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-sm text-sm font-bold text-[#A94C19] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016]"
-              >
-                Explore educational topics
-                <Arrow />
-              </Link>
-            </div>
-          ) : (
-            <ul className="mt-9 grid gap-5 md:grid-cols-2">
-              {approvedDownloads.map((file) => (
-                <li
-                  key={file.id}
-                  className="flex h-full flex-col rounded-xl border border-[#D9C8B0] bg-white p-7 shadow-sm"
-                >
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#A94C19]">
-                    {resourceCategories.find(
-                      (category) => category.id === file.category
-                    )?.title}
-                  </p>
-
-                  <h3 className="mt-4 font-serif text-2xl leading-snug text-[#30251F]">
-                    {file.title}
-                  </h3>
-
-                  <p className="mt-4 flex-1 text-sm leading-7 text-[#74675E]">
-                    {file.description}
-                  </p>
-
-                  <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#74675E]">
-                    <time dateTime={file.publishedAt}>
-                      {file.dateLabel}
-                    </time>
-
-                    <span>
-                      PDF · {file.fileSizeLabel}
-                    </span>
-                  </div>
-
-                  <a
-                    href={file.href}
-                    download
-                    type="application/pdf"
-                    className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-md bg-[#B95016] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#913E11] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B95016] motion-reduce:transition-none"
-                  >
-                    Download PDF
-                    <Arrow />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
+      {/* 5. AVAILABLE DOWNLOADS — SANITY CMS */}
+      <Suspense fallback={<DownloadsLoadingSection />}>
+        <SanityAvailableDownloadsSection />
+      </Suspense>
 
       {/* 6. DOCUMENT PUBLISHING REQUIREMENTS */}
       <section
@@ -766,9 +867,9 @@ export default function DownloadsPage() {
           </h2>
 
           <p className="mt-5 text-base leading-8 text-[#E9DDC9]">
-            Explore our product families and educational
-            content while the downloadable resource
-            collection is being prepared.
+            Explore our product families, educational content
+            and available publications to support your
+            hospitality requirements.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">

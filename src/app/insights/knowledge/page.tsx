@@ -1,6 +1,12 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+
+import {
+  getSanityKnowledgeArticles,
+  type KnowledgeArticleSummary,
+} from "@/lib/sanity-knowledge-articles";
 
 export const metadata: Metadata = {
   title: "Knowledge Hub | Bark Ornament Insights",
@@ -16,7 +22,11 @@ export const metadata: Metadata = {
  * publication date and approved PDF path have not been supplied.
  * Other topics are explicitly labelled as planned.
  *
- * No external fetching, database operations, form submissions or emails.
+ * No database operations, form submissions or emails.
+ *
+ * FILE 149 — STEP E4:
+ * Adds approved Sanity article summaries.
+ * Full CMS article pages are not included in this step.
  */
 
 type PlannedTopic = {
@@ -188,6 +198,133 @@ function KnowledgeMotif() {
   );
 }
 
+/* ==========================================
+   FILE 149 — STEP E4
+
+   APPROVED KNOWLEDGE ARTICLE SUMMARIES
+   ========================================== */
+
+const KNOWLEDGE_CATEGORY_LABELS = {
+  "materials-printing": "Materials & Printing",
+  "export-planning": "Export & Order Planning",
+  "branding-responsibility":
+    "Branding & Thoughtful Choices",
+} as const;
+
+function formatKnowledgeDate(
+  value: string | null
+): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
+}
+
+function KnowledgeSummaryCard({
+  article,
+}: {
+  article: KnowledgeArticleSummary;
+}) {
+  const dateLabel = formatKnowledgeDate(
+    article.publishedAt
+  );
+
+  return (
+    <article className="flex h-full flex-col rounded-xl border border-[#D9C8B0] bg-white p-7 shadow-sm transition-shadow hover:shadow-md motion-reduce:transition-none">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#A94C19]">
+        {KNOWLEDGE_CATEGORY_LABELS[article.category]}
+      </p>
+
+      <h3 className="mt-4 font-serif text-2xl leading-snug text-[#30251F]">
+        {article.title}
+      </h3>
+
+      <p className="mt-4 flex-1 text-sm leading-7 text-[#74675E]">
+        {article.summary}
+      </p>
+
+      <div className="mt-6 border-t border-[#E8DCCB] pt-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#806F5E]">
+          {article.series}
+          {article.edition
+            ? ` · ${article.edition}`
+            : ""}
+        </p>
+
+        {dateLabel ? (
+          <p className="mt-2 text-xs text-[#74675E]">
+            Published {dateLabel}
+          </p>
+        ) : null}
+
+        <p className="mt-3 text-xs leading-5 text-[#806F5E]">
+          Approved article summary
+        </p>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * Read approved Sanity article summaries.
+ *
+ * The full article renderer and reading
+ * links will be introduced separately.
+ *
+ * An empty result leaves the existing
+ * Knowledge Hub sections unchanged.
+ */
+async function PublishedKnowledgeArticles() {
+  const articles =
+    await getSanityKnowledgeArticles();
+
+  if (articles.length === 0) {
+    return null;
+  }
+
+  return (
+    <section
+      id="published-articles"
+      aria-labelledby="published-articles-title"
+      className="scroll-mt-20 border-t border-[#E0D2BF] bg-[#FAF7F0] px-5 py-16 sm:px-8 sm:py-20"
+    >
+      <div className="mx-auto max-w-7xl">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#A94C19]">
+          Approved educational content
+        </p>
+
+        <h2
+          id="published-articles-title"
+          className="mt-4 font-serif text-3xl leading-tight text-[#30251F] sm:text-4xl"
+        >
+          Published Knowledge Articles
+        </h2>
+
+        <p className="mt-5 max-w-3xl text-base leading-8 text-[#74675E]">
+          Explore approved educational summaries
+          covering materials, production,
+          branding and hospitality order planning.
+        </p>
+
+        <div className="mt-9 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {articles.map((article) => (
+            <KnowledgeSummaryCard
+              key={article.slug}
+              article={article}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function KnowledgeHubPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
@@ -250,8 +387,9 @@ export default function KnowledgeHubPage() {
                 branding and the planning behind hospitality products.
               </p>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-[#D8C8B5]">
-                Our existing GSM knowledge edition is featured below. Other
-                subjects are an editorial roadmap, not yet published articles.
+                Our GSM knowledge edition is featured below. Approved article
+                summaries are displayed when available, while the editorial
+                roadmap remains separate.
               </p>
               <div className="mt-9 flex flex-wrap gap-4">
                 <a
@@ -346,6 +484,11 @@ export default function KnowledgeHubPage() {
           </article>
         </div>
       </section>
+
+      {/* APPROVED KNOWLEDGE ARTICLES — SANITY */}
+      <Suspense fallback={null}>
+        <PublishedKnowledgeArticles />
+      </Suspense>
 
       {/* TOPIC NAVIGATION */}
       <section
@@ -466,7 +609,7 @@ export default function KnowledgeHubPage() {
                 with the correct edition number and verified publication date.
               </p>
               <p className="mt-5 text-xs font-semibold text-[#806F5E]">
-                Article pages not yet available
+                Additional article reading pages are being prepared.
               </p>
             </div>
             <div className="rounded-xl border border-[#D9C8B0] bg-[#FAF7F0] p-7 sm:p-8">

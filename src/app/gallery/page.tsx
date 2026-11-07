@@ -1,6 +1,15 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense, cache } from "react";
+
+import ApprovedProductImage from "@/components/ApprovedProductImage";
+
+import {
+  getSanityGalleryPhotography,
+  type GalleryCollectionId,
+  type GalleryImagePosition,
+} from "@/lib/sanity-gallery-photography";
 
 export const metadata: Metadata = {
   title: "Gallery & Product Showcase | Bark Ornament",
@@ -40,7 +49,8 @@ type ShowcaseCollection = {
  * Category slugs match:
  * src/app/categories/[slug]/page.tsx
  *
- * No network access, database access or submissions.
+ * Sanity photography integration added in File 148.
+ * No direct database access or submissions.
  */
 
 const collections = [
@@ -305,6 +315,70 @@ function ProductPreview({
   );
 }
 
+/* ==========================================
+   FILE 148 — STEP D
+
+   SANITY GALLERY PHOTO INTEGRATION
+   ========================================== */
+
+/**
+ * Share the same Sanity result across all
+ * twelve gallery positions in one render.
+ *
+ * This prevents twelve independent
+ * requests to the same CMS query.
+ */
+const getGalleryPhotographyOnce = cache(
+  getSanityGalleryPhotography
+);
+
+/**
+ * Retrieve an approved Gallery photograph.
+ *
+ * If a photograph is missing or invalid,
+ * render the original Gallery placeholder.
+ */
+async function SanityProductPreview({
+  collectionId,
+  position,
+  number,
+  label,
+  tone,
+}: {
+  collectionId: GalleryCollectionId;
+  position: GalleryImagePosition;
+  number: string;
+  label: string;
+  tone: string;
+}) {
+  const galleries =
+    await getGalleryPhotographyOnce();
+
+  const photo =
+    galleries[collectionId]?.[position];
+
+  if (!photo) {
+    return (
+      <ProductPreview
+        number={number}
+        label={label}
+        tone={tone}
+      />
+    );
+  }
+
+  return (
+    <ApprovedProductImage
+      label={label}
+      photo={photo}
+      aspect="hero"
+      fit="cover"
+      sizes="(max-width: 640px) 100vw, 50vw"
+      className="rounded-none"
+    />
+  );
+}
+
 export default function GalleryPage() {
   return (
     <main className="bg-[#FAF7F0] text-[#30251F]">
@@ -536,16 +610,35 @@ export default function GalleryPage() {
                   key={item.title}
                   className="overflow-hidden rounded-xl border border-[#D9C8B0] bg-white shadow-sm transition-[box-shadow,border-color] duration-300 hover:border-[#C59A45] hover:shadow-lg motion-reduce:transition-none"
                 >
-                  <ProductPreview
-                    number={`${collection.number}.${itemIndex + 1}`}
-                    label={item.title}
-                    tone={
-                      previewTones[
-                        (sectionIndex + itemIndex) %
-                          previewTones.length
-                      ]
+                  <Suspense
+                    fallback={
+                      <ProductPreview
+                        number={`${collection.number}.${itemIndex + 1}`}
+                        label={item.title}
+                        tone={
+                          previewTones[
+                            (sectionIndex + itemIndex) %
+                              previewTones.length
+                          ]
+                        }
+                      />
                     }
-                  />
+                  >
+                    <SanityProductPreview
+                      collectionId={collection.id}
+                      position={
+                        itemIndex === 0 ? "first" : "second"
+                      }
+                      number={`${collection.number}.${itemIndex + 1}`}
+                      label={item.title}
+                      tone={
+                        previewTones[
+                          (sectionIndex + itemIndex) %
+                            previewTones.length
+                        ]
+                      }
+                    />
+                  </Suspense>
 
                   <div className="p-6 sm:p-7">
                     <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#A94C19]">

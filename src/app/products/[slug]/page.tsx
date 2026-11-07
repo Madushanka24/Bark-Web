@@ -13,7 +13,12 @@ import ApprovedProductImage, {
 import {
   getApprovedProductImages,
   getApprovedProductMainImage,
+  type ApprovedProductGallery,
 } from "@/lib/approved-product-images";
+
+import {
+  getSanityProductPhotography,
+} from "@/lib/sanity-product-photography";
 
 import {
   products,
@@ -323,9 +328,41 @@ async function ProductDetailContent({
    * this product's actual catalogue slug.
    */
 
-  const gallery = getApprovedProductImages(
+  /* ==========================================
+     FILE 146 — STEP D2
+     APPROVED SANITY PRODUCT PHOTOGRAPHY
+     ========================================== */
+
+  // Preserve the existing approved local
+  // image registry as the fallback.
+  const localGallery = getApprovedProductImages(
     product.slug
   );
+
+  // The ID comes from the verified product
+  // registry, not directly from the URL.
+  const sanityGallery =
+    await getSanityProductPhotography(product.id);
+
+  // Preserve the existing four-slot gallery
+  // structure and all current JSX.
+  const gallery: ApprovedProductGallery = {
+    main:
+      sanityGallery?.main ??
+      localGallery.main,
+
+    additional:
+      sanityGallery?.additional[0] ??
+      localGallery.additional,
+
+    material:
+      sanityGallery?.material ??
+      localGallery.material,
+
+    finish:
+      sanityGallery?.finish ??
+      localGallery.finish,
+  };
 
   const hasApprovedPhotographs = Boolean(
     gallery.main ||
